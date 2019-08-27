@@ -1,66 +1,51 @@
+local anim = require "utils/animation"
+require "utils/class"
+
 local spritesheet = love.graphics.newImage('assets/enemy.png')
-local currentFrame = 1
-local elapsedTime = 0
 
-local enemy = {
-  spritesheet = spritesheet,
-  x = 0,
-  y = 0,
-  speed = 100,
-  animations = {
-    up = {
-      love.graphics.newQuad(0,0,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,0,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,0,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,0,32,32,spritesheet:getDimensions())
-    },
-    down = {
-      love.graphics.newQuad(0,32,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,32,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,32,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,32,32,32,spritesheet:getDimensions())
-    },
-    left = {
-      love.graphics.newQuad(0,64,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,64,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,64,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,64,32,32,spritesheet:getDimensions())
-    },
-    right = {
-      love.graphics.newQuad(0,96,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,96,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,96,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,96,32,32,spritesheet:getDimensions())
-    },
-  },
-  wantsUp = false,
-  wantsRight = false,
-  wantsDown = false,
-  wantsLeft = false,
-  isEnemy = true,
-  visible = false
-}
-enemy.animation = enemy.animations.down
+Enemy = class(function(obj)
+    obj.spritesheet = spritesheet
+    obj.x = 0
+    obj.y = 0
+    obj.speed = 100
+    obj.animations = {
+      up = anim.getQuads(spritesheet, 0, 0, 32, 32, 4),
+      down = anim.getQuads(spritesheet, 0, 32, 32, 32, 4),
+      left = anim.getQuads(spritesheet, 0, 64, 32, 32, 4),
+      right = anim.getQuads(spritesheet, 0, 96, 32, 32, 4)
+    }
+    obj.wantsUp = false
+    obj.wantsRight = false
+    obj.wantsDown = false
+    obj.wantsLeft = false
+    obj.isEnemy = true
+    obj.visible = false
+    obj.animation = obj.animations.down
+  end)
 
-function enemy.init()
+function Enemy:update(dt)
+end
+
+function Enemy:draw()
+  if self.visible then
+    love.graphics.draw(self.spritesheet, self.animation[1], math.floor(self.x), math.floor(self.y))
+  end
+end
+
+function Enemy.initAllEnemies()
+  local i = 1
+  enemies = {enemyCount = 0}
   for k, object in pairs(map.objects) do
   	if object.name == "Enemy" then
-  	  enemy.x = object.x
-      enemy.y = object.y
-      enemy.visible = true
-      world:add(enemy, enemy.x, enemy.y, 32, 32)
-  		break
+      enemies[i] = Enemy()
+  	  enemies[i].x = object.x
+      enemies[i].y = object.y
+      enemies[i].visible = true
+      world:add(enemies[i], enemies[i].x, enemies[i].y, 32, 32)
+      i = i + 1
+      enemies.enemyCount = enemies.enemyCount + 1
   	end
   end
-end
 
-function enemy.update(dt)
+  return enemies
 end
-
-function enemy.draw()
-  if enemy.visible then
-    love.graphics.draw(enemy.spritesheet, enemy.animation[currentFrame], math.floor(enemy.x), math.floor(enemy.y))
-  end
-end
-
-return enemy

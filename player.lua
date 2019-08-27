@@ -1,3 +1,5 @@
+local anim = require "utils/animation"
+
 local spritesheet = love.graphics.newImage('assets/player.png')
 local currentFrame = 1
 local elapsedTime = 0
@@ -8,30 +10,10 @@ local player = {
   y = 0,
   speed = 100,
   animations = {
-    up = {
-      love.graphics.newQuad(0,0,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,0,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,0,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,0,32,32,spritesheet:getDimensions())
-    },
-    down = {
-      love.graphics.newQuad(0,32,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,32,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,32,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,32,32,32,spritesheet:getDimensions())
-    },
-    left = {
-      love.graphics.newQuad(0,64,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,64,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,64,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,64,32,32,spritesheet:getDimensions())
-    },
-    right = {
-      love.graphics.newQuad(0,96,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(32,96,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(64,96,32,32,spritesheet:getDimensions()),
-      love.graphics.newQuad(96,96,32,32,spritesheet:getDimensions())
-    },
+    up = anim.getQuads(spritesheet, 0, 0, 32, 32, 4),
+    down = anim.getQuads(spritesheet, 0, 32, 32, 32, 4),
+    left = anim.getQuads(spritesheet, 0, 64, 32, 32, 4),
+    right = anim.getQuads(spritesheet, 0, 96, 32, 32, 4)
   },
   wantsUp = false,
   wantsRight = false,
@@ -79,16 +61,7 @@ function player.update(dt)
 
   end
 
-  elapsedTime = elapsedTime + dt
-
-	if(elapsedTime > 0.15) then
-		if(currentFrame < 4) then
-				currentFrame = currentFrame + 1
-		else
-				currentFrame = 1
-		end
-		elapsedTime = 0
-	end
+  currentFrame, elapsedTime = anim.getFrame(dt, currentFrame, elapsedTime, 0.15, 4)
 
 	if not player.wantsUp and not player.wantsDown and
 		 not player.wantsLeft and not player.wantsRight then

@@ -1,42 +1,11 @@
 local sti = require "lib/sti"
 local bump = require "lib/bump"
-local player = require "player"
-local enemy = require "enemy"
 inspect = require "lib/inspect"
 
-local gameStates = {}
-gameStates.gameLoop = {
-  bindings = {
-    moveUp = function() player.wantsUp = true end,
-    moveDown = function() player.wantsDown = true end,
-    moveLeft = function() player.wantsLeft = true end,
-		moveRight = function() player.wantsRight = true end,
-		releaseUp = function() player.wantsUp = false end,
-    releaseDown = function() player.wantsDown = false end,
-    releaseLeft = function() player.wantsLeft = false end,
-		releaseRight = function() player.wantsRight = false end
-  },
-  keys = {
-    w = "moveUp",
-		up = "moveUp",
-    s = "moveDown",
-		down = "moveDown",
-    a = "moveLeft",
-		left = "moveLeft",
-    d = "moveRight",
-		right = "moveRight"
-  },
-	keysReleased = {
-		w = "releaseUp",
-		up = "releaseUp",
-    s = "releaseDown",
-		down = "releaseDown",
-    a = "releaseLeft",
-		left = "releaseLeft",
-    d = "releaseRight",
-		right = "releaseRight"
-	}
-}
+local enemy = require "enemy"
+local gameStates = require "gameStates"
+player = require "player"
+
 local state = gameStates.gameLoop
 
 function inputHandler(input)
@@ -59,20 +28,24 @@ function love.load()
 	map = sti("maps/map02.lua", {"bump"})
 	map:bump_init(world)
   player.init()
-  enemy.init()
+  enemies = Enemy.initAllEnemies()
 end
 
 function love.update(dt)
 	map:update(dt)
 	player.update(dt)
-  enemy.update(dt)
+  for i = 1, enemies.enemyCount do
+    enemies[i]:update(dt)
+  end
 end
 
 function love.draw()
 	--love.graphics.setColor(1, 1, 1)
 	map:draw()
   player.draw()
-  enemy.draw()
+  for i = 1, enemies.enemyCount do
+    enemies[i]:draw()
+  end
 	--love.graphics.setColor(1, 0, 0)
 	--map:bump_draw(world)
 end
