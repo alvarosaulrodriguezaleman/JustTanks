@@ -31,6 +31,7 @@ function love.mousepressed(x, y, button, istouch)
 end
 
 function love.load()
+  love.mouse.setCursor(love.mouse.newCursor("assets/cursor.png", 14, 14))
 	world = bump.newWorld(32)
 	map = sti("maps/map02.lua", {"bump"})
 	map:bump_init(world)
