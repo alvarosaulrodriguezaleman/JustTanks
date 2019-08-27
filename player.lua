@@ -19,6 +19,7 @@ local player = {
   height = 32,
   speed = 100,
   bulletSpeed = 250,
+  maxBulletCount = 2,
   wantsUp = false,
   wantsRight = false,
   wantsDown = false,
@@ -76,20 +77,22 @@ function player.draw()
 end
 
 function player.shoot(x, y)
-  local startX = player.x + player.width / 2
-	local startY = player.y + player.height / 2
-	local mouseX = x
-	local mouseY = y
+  if #bullets < player.maxBulletCount then
+    local startX = player.x + player.width / 2
+    local startY = player.y + player.height / 2
+    local mouseX = x
+    local mouseY = y
 
-	local angle = math.atan2((mouseY - startY), (mouseX - startX))
+	  local angle = math.atan2((mouseY - startY), (mouseX - startX))
 
-	local bulletDx = player.bulletSpeed * math.cos(angle)
-	local bulletDy = player.bulletSpeed * math.sin(angle)
+	  local bulletDx = player.bulletSpeed * math.cos(angle)
+	  local bulletDy = player.bulletSpeed * math.sin(angle)
 
-  bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, 1)
-	table.insert(bullets, bullet)
-  world:add(bullet, bullet.x, bullet.y, 8, 8)
-  bulletID = bulletID + 1
+    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, 1)
+	  table.insert(bullets, bullet)
+    world:add(bullet, bullet.x, bullet.y, 8, 8)
+    bulletID = bulletID + 1
+  end
 end
 
 return player
