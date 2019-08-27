@@ -2,8 +2,9 @@ local sti = require "lib/sti"
 local bump = require "lib/bump"
 inspect = require "lib/inspect"
 
-local enemy = require "enemy"
 local gameStates = require "gameStates"
+require "enemy"
+require "bullet"
 player = require "player"
 
 local state = gameStates.gameLoop
@@ -23,19 +24,29 @@ function love.keyreleased(k)
   return inputHandler(binding)
 end
 
+function love.mousepressed(x, y, button, istouch)
+  if button == 1 then
+    player.shoot(x, y)
+  end
+end
+
 function love.load()
 	world = bump.newWorld(32)
 	map = sti("maps/map02.lua", {"bump"})
 	map:bump_init(world)
   player.init()
   enemies = Enemy.initAllEnemies()
+  bullets, bulletID = Bullet.init()
 end
 
 function love.update(dt)
 	map:update(dt)
 	player.update(dt)
-  for i = 1, enemies.enemyCount do
-    enemies[i]:update(dt)
+  for i, enemy in ipairs(enemies) do
+    enemy:update(dt)
+  end
+  for i, bullet in ipairs(bullets) do
+    bullet:update(dt)
   end
 end
 
@@ -43,8 +54,11 @@ function love.draw()
 	--love.graphics.setColor(1, 1, 1)
 	map:draw()
   player.draw()
-  for i = 1, enemies.enemyCount do
-    enemies[i]:draw()
+  for i, enemy in ipairs(enemies) do
+    enemy:draw()
+  end
+  for i, bullet in ipairs(bullets) do
+    bullet:draw()
   end
 	--love.graphics.setColor(1, 0, 0)
 	--map:bump_draw(world)
