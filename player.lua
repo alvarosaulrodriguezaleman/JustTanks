@@ -1,4 +1,5 @@
 local anim = require "utils/animation"
+local filters = require "utils/collisionFilters"
 require "bullet"
 
 local spritesheet = love.graphics.newImage('assets/player.png')
@@ -39,11 +40,6 @@ function player.init()
   end
 end
 
-local playerFilter = function(item, other)
-  if not (other.properties == nil) and other.properties.isWall then return 'slide' end
-  if other.isEnemy then return 'slide' end
-end
-
 function player.update(dt)
   if player.wantsUp then
     player.y = player.y - player.speed * dt
@@ -62,7 +58,7 @@ function player.update(dt)
     player.animation = player.animations.right
   end
 
-  player.x, player.y, cols, len = world:move(player, player.x, player.y, playerFilter)
+  player.x, player.y, cols, len = world:move(player, player.x, player.y, filters.player)
 
   currentFrame, elapsedTime = anim.getFrame(dt, currentFrame, elapsedTime, 0.15, 4)
 
@@ -88,7 +84,7 @@ function player.shoot(x, y)
 	  local bulletDx = player.bulletSpeed * math.cos(angle)
 	  local bulletDy = player.bulletSpeed * math.sin(angle)
 
-    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, 1)
+    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, 1, false)
 	  table.insert(bullets, bullet)
     world:add(bullet, bullet.x, bullet.y, 8, 8)
     bulletID = bulletID + 1

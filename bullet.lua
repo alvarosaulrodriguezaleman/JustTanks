@@ -1,9 +1,10 @@
 local anim = require "utils/animation"
+local filters = require "utils/collisionFilters"
 require "utils/class"
 
 local spritesheet = love.graphics.newImage('assets/bullet.png')
 
-Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft)
+Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft, isEnemyBullet)
     obj.id = id
     obj.spritesheet = spritesheet
     obj.animation = anim.getQuads(spritesheet, 0, 0, 8, 8, 4)
@@ -15,19 +16,13 @@ Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft)
     obj.dy = dy
     obj.bouncesLeft = bouncesLeft
     obj.isBullet = true
+    obj.isEnemyBullet = isEnemyBullet
   end)
-
-local bulletFilter = function(item, other)
-  if not (other.properties == nil) and other.properties.isWall then return 'bounce' end
-  if other.isEnemy then return 'touch' end
-  if other.isBullet then return 'touch' end
-  if other.isPlayer then return 'cross' end
-end
 
 function Bullet:update(dt)
   self.x = self.x + (self.dx * dt)
 	self.y = self.y + (self.dy * dt)
-  self.x, self.y, cols, len = world:move(self, self.x, self.y, bulletFilter)
+  self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.bullets)
   for i = 1, len do
     local other = cols[i].other
     if not (other.properties == nil) and other.properties.isWall then
