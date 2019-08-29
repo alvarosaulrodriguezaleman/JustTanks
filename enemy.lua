@@ -1,6 +1,6 @@
 local anim = require "utils/animation"
 local filters = require "utils/collisionFilters"
-require "utils/class"
+require "lib/class"
 
 local spritesheet = love.graphics.newImage('assets/enemy.png')
 
@@ -8,12 +8,7 @@ Enemy = class(function(obj, id, type, x, y)
     obj.id = id
     obj.type = type
     obj.spritesheet = spritesheet
-    obj.animations = {
-      up = anim.getQuads(spritesheet, 0, 0, 32, 32, 4),
-      down = anim.getQuads(spritesheet, 0, 32, 32, 32, 4),
-      left = anim.getQuads(spritesheet, 0, 64, 32, 32, 4),
-      right = anim.getQuads(spritesheet, 0, 96, 32, 32, 4)
-    }
+    obj.animations = anim.getDirectionalQuads(spritesheet, 0, 0, 32, 32, 4)
     obj.currentFrame = 1
     obj.elapsedFrameTime = 0
     obj.x = x
@@ -30,28 +25,9 @@ Enemy = class(function(obj, id, type, x, y)
   end)
 
 function Enemy:update(dt)
-  self:processMovement(dt)
-
-  if self.wantsUp then
-    self.y = self.y - self.speed * dt
-    self.animation = self.animations.up
-  end
-  if self.wantsDown then
-    self.y = self.y + self.speed * dt
-    self.animation = self.animations.down
-  end
-  if self.wantsLeft then
-    self.x = self.x - self.speed * dt
-    self.animation = self.animations.left
-  end
-  if self.wantsRight then
-    self.x = self.x + self.speed * dt
-    self.animation = self.animations.right
-  end
-
-  self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.enemy)
-
   self.currentFrame, self.elapsedFrameTime = anim.getFrame(dt, self.currentFrame, self.elapsedFrameTime, 0.25, 4)
+  self:processMovement(dt)
+  self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.enemy)
 end
 
 function Enemy:draw()
@@ -87,6 +63,28 @@ function Enemy:processMovement(dt)
   if self.type == 1 then
     self:randomMovement(dt)
   end
+
+  if self.wantsUp then
+    self.y = self.y - self.speed * dt
+    self.animation = self.animations.up
+  end
+  if self.wantsDown then
+    self.y = self.y + self.speed * dt
+    self.animation = self.animations.down
+  end
+  if self.wantsLeft then
+    self.x = self.x - self.speed * dt
+    self.animation = self.animations.left
+  end
+  if self.wantsRight then
+    self.x = self.x + self.speed * dt
+    self.animation = self.animations.right
+  end
+
+  if not self.wantsUp and not self.wantsDown and
+		 not self.wantsLeft and not self.wantsRight then
+		self.currentFrame = 1
+	end
 end
 
 function Enemy:randomMovement(dt)

@@ -1,6 +1,6 @@
 local anim = require "utils/animation"
 local filters = require "utils/collisionFilters"
-require "utils/class"
+require "lib/class"
 
 local spritesheet = love.graphics.newImage('assets/bullet.png')
 
@@ -23,27 +23,7 @@ function Bullet:update(dt)
   self.x = self.x + (self.dx * dt)
 	self.y = self.y + (self.dy * dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.bullets)
-  for i = 1, len do
-    local other = cols[i].other
-    if not (other.properties == nil) and other.properties.isWall then
-      if self.bouncesLeft <= 0 then
-        self:destroy()
-      else
-        self.bouncesLeft = self.bouncesLeft - 1
-      end
-      local nx, ny = cols[i].normal.x, cols[i].normal.y
-      if (nx < 0 and self.dx > 0) or (nx > 0 and self.dx < 0) then
-        self.dx = -self.dx
-      end
-      if (ny < 0 and self.dy > 0) or (ny > 0 and self.dy < 0) then
-        self.dy = -self.dy
-      end
-    end
-    if other.isEnemy or other.isBullet then
-      self:destroy()
-      other:destroy()
-    end
-  end
+  self:resolveCollisions(cols, len)
   self.currentFrame, self.elapsedTime = anim.getFrame(dt, self.currentFrame, self.elapsedTime, 0.05, 4)
 end
 
@@ -62,4 +42,33 @@ end
 
 function Bullet.init()
   return {}, 1
+end
+
+function Bullet:resolveCollisions(cols, len)
+  for i = 1, len do
+    local other = cols[i].other
+    if not (other.properties == nil) and other.properties.isWall then
+      if self.bouncesLeft <= 0 then
+        self:destroy()
+      else
+        self.bouncesLeft = self.bouncesLeft - 1
+      end
+      local nx, ny = cols[i].normal.x, cols[i].normal.y
+      if (nx < 0 and self.dx > 0) or (nx > 0 and self.dx < 0) then
+        self.dx = -self.dx
+      end
+      if (ny < 0 and self.dy > 0) or (ny > 0 and self.dy < 0) then
+        self.dy = -self.dy
+      end
+    end
+    if other.isEnemy or other.isBullet then
+      Timer.during(0.2, function()
+        SCREEN_SHAKE = true
+      end, function()
+        SCREEN_SHAKE = false
+      end)
+      self:destroy()
+      other:destroy()
+    end
+  end
 end

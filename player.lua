@@ -8,12 +8,7 @@ local elapsedTime = 0
 
 local player = {
   spritesheet = spritesheet,
-  animations = {
-    up = anim.getQuads(spritesheet, 0, 0, 32, 32, 4),
-    down = anim.getQuads(spritesheet, 0, 32, 32, 32, 4),
-    left = anim.getQuads(spritesheet, 0, 64, 32, 32, 4),
-    right = anim.getQuads(spritesheet, 0, 96, 32, 32, 4)
-  },
+  animations = anim.getDirectionalQuads(spritesheet, 0, 0, 32, 32, 4),
   x = 0,
   y = 0,
   width = 32,
@@ -41,31 +36,9 @@ function player.init()
 end
 
 function player.update(dt)
-  if player.wantsUp then
-    player.y = player.y - player.speed * dt
-    player.animation = player.animations.up
-  end
-  if player.wantsDown then
-    player.y = player.y + player.speed * dt
-    player.animation = player.animations.down
-  end
-  if player.wantsLeft then
-    player.x = player.x - player.speed * dt
-    player.animation = player.animations.left
-  end
-  if player.wantsRight then
-    player.x = player.x + player.speed * dt
-    player.animation = player.animations.right
-  end
-
-  player.x, player.y, cols, len = world:move(player, player.x, player.y, filters.player)
-
   currentFrame, elapsedTime = anim.getFrame(dt, currentFrame, elapsedTime, 0.15, 4)
-
-	if not player.wantsUp and not player.wantsDown and
-		 not player.wantsLeft and not player.wantsRight then
-		currentFrame = 1
-	end
+  player.processMovement(dt)
+  player.x, player.y, cols, len = world:move(player, player.x, player.y, filters.player)
 end
 
 function player.draw()
@@ -89,6 +62,30 @@ function player.shoot(x, y)
     world:add(bullet, bullet.x, bullet.y, 8, 8)
     bulletID = bulletID + 1
   end
+end
+
+function player.processMovement(dt)
+  if player.wantsUp then
+    player.y = player.y - player.speed * dt
+    player.animation = player.animations.up
+  end
+  if player.wantsDown then
+    player.y = player.y + player.speed * dt
+    player.animation = player.animations.down
+  end
+  if player.wantsLeft then
+    player.x = player.x - player.speed * dt
+    player.animation = player.animations.left
+  end
+  if player.wantsRight then
+    player.x = player.x + player.speed * dt
+    player.animation = player.animations.right
+  end
+
+  if not player.wantsUp and not player.wantsDown and
+		 not player.wantsLeft and not player.wantsRight then
+		currentFrame = 1
+	end
 end
 
 return player

@@ -1,5 +1,6 @@
 local sti = require "lib/sti"
 local bump = require "lib/bump"
+Timer = require "lib/timer"
 inspect = require "lib/inspect"
 
 local gameStates = require "gameStates"
@@ -41,6 +42,7 @@ function love.load()
 end
 
 function love.update(dt)
+  Timer.update(dt)
 	map:update(dt)
 	player.update(dt)
   for i, enemy in ipairs(enemies) do
@@ -53,7 +55,15 @@ end
 
 function love.draw()
 	--love.graphics.setColor(1, 1, 1)
-	map:draw()
+  if SCREEN_SHAKE then
+    local dx = love.math.random(-2, 2)
+    local dy = love.math.random(-2, 2)
+    love.graphics.translate(dx, dy)
+    map:draw(dx, dy)
+  else
+	  map:draw()
+  end
+
   player.draw()
   for i, enemy in ipairs(enemies) do
     enemy:draw()
