@@ -1,6 +1,7 @@
 local sti = require "lib/sti"
 local bump = require "lib/bump"
 Timer = require "lib/timer"
+Gamestate = require "lib/gamestate"
 inspect = require "lib/inspect"
 
 local gameStates = require "gameStates"
@@ -8,6 +9,7 @@ require "enemy"
 require "bullet"
 player = require "player"
 
+local game = {}
 local state = gameStates.gameLoop
 
 function inputHandler(input)
@@ -32,28 +34,37 @@ function love.mousepressed(x, y, button, istouch)
 end
 
 function love.load()
+  Gamestate.registerEvents()
+  Gamestate.switch(game)
+end
+
+function game:enter()
   love.mouse.setCursor(love.mouse.newCursor("assets/cursor.png", 14, 14))
 	world = bump.newWorld(32)
 	map = sti("maps/map02.lua", {"bump"})
 	map:bump_init(world)
   player.init()
   enemies = Enemy.initAllEnemies()
-  bullets, bulletID = Bullet.init()
+  Bullet.init()
+  RESTART = false
 end
 
-function love.update(dt)
+function game:update(dt)
+  if RESTART then
+    game:enter()
+  end
   Timer.update(dt)
 	map:update(dt)
 	player.update(dt)
   for i, enemy in ipairs(enemies) do
     enemy:update(dt)
   end
-  for i, bullet in ipairs(bullets) do
+  for i, bullet in ipairs(Bullet.getBullets()) do
     bullet:update(dt)
   end
 end
 
-function love.draw()
+function game:draw()
 	--love.graphics.setColor(1, 1, 1)
   if SCREEN_SHAKE then
     local dx = love.math.random(-2, 2)
@@ -68,7 +79,7 @@ function love.draw()
   for i, enemy in ipairs(enemies) do
     enemy:draw()
   end
-  for i, bullet in ipairs(bullets) do
+  for i, bullet in ipairs(Bullet.getBullets()) do
     bullet:draw()
   end
 	--love.graphics.setColor(1, 0, 0)

@@ -27,6 +27,7 @@ Enemy = class(function(obj, id, type, x, y)
 function Enemy:update(dt)
   self.currentFrame, self.elapsedFrameTime = anim.getFrame(dt, self.currentFrame, self.elapsedFrameTime, 0.25, 4)
   self:processMovement(dt)
+  self:processAttacks(dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.enemy)
 end
 
@@ -39,6 +40,11 @@ function Enemy.init(id, type, x, y)
     enemy = Enemy(id, 1, x, y)
     enemy.elapsedMovementTime = 0
     enemy.movementTimeThreshold = 0
+    enemy.elapsedAttackTime = 0
+    enemy.attackTimeThreshold = love.math.random(1, 3) + love.math.random()
+    enemy.maxBulletCount = 2
+    enemy.bulletSpeed = 140
+    enemy.bouncesLeft = 1
   end
 
   return enemy
@@ -100,6 +106,26 @@ function Enemy:randomMovement(dt)
     self.wantsDown = newMove == 3 and true or false
     self.wantsLeft = newMove == 4 and true or false
   end
+end
+
+function Enemy:processAttacks(dt)
+  if self.type == 1 then
+    self:shootAtPlayer(dt)
+  end
+end
+
+function Enemy:shootAtPlayer(dt)
+  self.elapsedAttackTime = self.elapsedAttackTime + dt
+
+  if self.elapsedAttackTime > self.attackTimeThreshold then
+    self.elapsedAttackTime = 0
+    self.attackTimeThreshold = love.math.random(1, 2) + love.math.random()
+    self:shoot(player.x, player.y)
+  end
+end
+
+function Enemy:shoot(x, y)
+  Bullet.shoot(self.x, self.y, self.width, self.height, x, y, self.bulletSpeed, self.bouncesLeft, self.maxBulletCount, self.id)
 end
 
 function Enemy:destroy()

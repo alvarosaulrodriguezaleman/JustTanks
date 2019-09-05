@@ -3,8 +3,10 @@ local filters = require "utils/collisionFilters"
 require "lib/class"
 
 local spritesheet = love.graphics.newImage('assets/bullet.png')
+local bullets = {}
+local bulletID = 1
 
-Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft, isEnemyBullet)
+Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft, isEnemyBullet, shooterID)
     obj.id = id
     obj.spritesheet = spritesheet
     obj.animation = anim.getQuads(spritesheet, 0, 0, 8, 8, 4)
@@ -17,9 +19,11 @@ Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft, isEnemyBullet)
     obj.bouncesLeft = bouncesLeft
     obj.isBullet = true
     obj.isEnemyBullet = isEnemyBullet
+    obj.shooterID = shooterID
   end)
 
 function Bullet:update(dt)
+  -- if #bullets == 0 then return end
   self.x = self.x + (self.dx * dt)
 	self.y = self.y + (self.dy * dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.bullets)
@@ -41,7 +45,8 @@ function Bullet:destroy()
 end
 
 function Bullet.init()
-  return {}, 1
+  bullets = {}
+  bulletID = 1
 end
 
 function Bullet:resolveCollisions(cols, len)
@@ -61,7 +66,7 @@ function Bullet:resolveCollisions(cols, len)
         self.dy = -self.dy
       end
     end
-    if other.isEnemy or other.isBullet then
+    if other.isEnemy and not self.isEnemyBullet or other.isPlayer and self.isEnemyBullet or other.isBullet then
       Timer.during(0.2, function()
         SCREEN_SHAKE = true
       end, function()
@@ -71,4 +76,48 @@ function Bullet:resolveCollisions(cols, len)
       other:destroy()
     end
   end
+end
+
+function Bullet.shoot(x, y, w, h, targetX, targetY, bulletSpeed, bouncesLeft, maxBulletCount, id)
+  id = id or -1
+  local isEnemyBullet = id ~= -1 and true or false
+  if Bullet.getNumberOfBullets(id) < maxBulletCount then
+    local startX = x + w / 2
+    local startY = y + h / 2
+    local endX = targetX
+    local endY = targetY
+
+    local angle = math.atan2((endY - startY), (endX - startX))
+
+    local bulletDx = bulletSpeed * math.cos(angle)
+    local bulletDy = bulletSpeed * math.sin(angle)
+
+    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, bouncesLeft, isEnemyBullet)
+    table.insert(bullets, bullet)
+    world:add(bullet, bullet.x, bullet.y, 8, 8)
+    bulletID = bulletID + 1
+  end
+end
+
+function Bullet.getNumberOfBullets(id)
+  id = id or -1
+  local count = 0
+  if id == -1 then
+    for i, v in ipairs(bullets) do
+      if not v.isEnemyBullet then
+        count = count + 1
+      end
+    end
+  else
+    for i, v in ipairs(bullets) do
+      if v.shooterID == id then
+        count = count + 1
+      end
+    end
+  end
+  return count
+end
+
+function Bullet.getBullets()
+  return bullets
 end

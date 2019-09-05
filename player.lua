@@ -16,6 +16,7 @@ local player = {
   speed = 100,
   bulletSpeed = 250,
   maxBulletCount = 2,
+  bouncesLeft = 1,
   wantsUp = false,
   wantsRight = false,
   wantsDown = false,
@@ -46,22 +47,7 @@ function player.draw()
 end
 
 function player.shoot(x, y)
-  if #bullets < player.maxBulletCount then
-    local startX = player.x + player.width / 2
-    local startY = player.y + player.height / 2
-    local mouseX = x
-    local mouseY = y
-
-	  local angle = math.atan2((mouseY - startY), (mouseX - startX))
-
-	  local bulletDx = player.bulletSpeed * math.cos(angle)
-	  local bulletDy = player.bulletSpeed * math.sin(angle)
-
-    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, 1, false)
-	  table.insert(bullets, bullet)
-    world:add(bullet, bullet.x, bullet.y, 8, 8)
-    bulletID = bulletID + 1
-  end
+  Bullet.shoot(player.x, player.y, player.width, player.height, x, y, player.bulletSpeed, player.bouncesLeft, player.maxBulletCount)
 end
 
 function player.processMovement(dt)
@@ -86,6 +72,10 @@ function player.processMovement(dt)
 		 not player.wantsLeft and not player.wantsRight then
 		currentFrame = 1
 	end
+end
+
+function player.destroy()
+  RESTART = true
 end
 
 return player
