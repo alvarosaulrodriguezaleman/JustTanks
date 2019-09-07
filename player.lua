@@ -5,6 +5,7 @@ local player = {
   image = love.graphics.newImage('assets/player.png'),
   barrelImage = love.graphics.newImage('assets/player_barrel.png'),
   bulletImage = love.graphics.newImage('assets/player_bullet.png'),
+  lives = 3,
   x = 0,
   y = 0,
   dx = 0,
@@ -18,7 +19,7 @@ local player = {
   bulletSpeed = 200,
   bulletWidth = 6,
   bulletHeight = 10,
-  maxBulletCount = 2,
+  maxBulletCount = 3,
   bouncesLeft = 1,
   wantsUp = false,
   wantsRight = false,
@@ -45,7 +46,7 @@ end
 
 function player.draw()
   love.graphics.draw(player.image, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), player.angle, 1, 1, 17, 17)
-  local barrelAngle = animation.getAngle(player.x, player.y, player.width, player.height, love.mouse.getX() - BASE_TX, love.mouse.getY() - BASE_TY) - math.pi/2 + 0.05
+  local barrelAngle = animation.getAngle(player.x, player.y, player.width, player.height, (love.mouse.getX() - BASE_TX) / BASE_SX, (love.mouse.getY() - BASE_TY) / BASE_SY) - math.pi/2 - 0.04
   love.graphics.draw(player.barrelImage, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), barrelAngle, 1, 1, 6, 6)
 end
 
@@ -89,7 +90,12 @@ function player.processMovement(dt)
 end
 
 function player.destroy()
-  RESTART = true
+  if player.lives > 1 then
+    RESTART = true
+    player.lives = player.lives - 1
+  else
+    return Gamestate.switch(menu)
+end
 end
 
 return player

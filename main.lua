@@ -30,8 +30,6 @@ function love.keyreleased(k)
 end
 
 function love.load()
-  font = love.graphics.newFont(14)
-  love.graphics.setFont(font)
   Gamestate.registerEvents()
-  Gamestate.switch(menu)
+  return Gamestate.switch(menu)
 end

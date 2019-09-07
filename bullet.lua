@@ -2,7 +2,6 @@ local anim = require "utils/animation"
 local filters = require "utils/collisionFilters"
 require "lib/class"
 
-local spritesheet = love.graphics.newImage('assets/bullet.png')
 local bullets = {}
 local bulletID = 1
 

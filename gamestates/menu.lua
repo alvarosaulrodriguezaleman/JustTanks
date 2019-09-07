@@ -33,6 +33,10 @@ function menu:enter()
   	}
 
     id = button.spawn(flags)
+    font = love.graphics.newFont(14)
+    love.graphics.setFont(font)
+
+    player.lives = 3
 end
 
 function menu:update(dt)
