@@ -1,6 +1,6 @@
-local gameStates = {}
+local controls = {}
 
-gameStates.gameLoop = {
+controls.game = {
   bindings = {
     moveUp = function() player.wantsUp = true end,
     moveDown = function() player.wantsDown = true end,
@@ -33,4 +33,4 @@ gameStates.gameLoop = {
 	}
 }
 
-return gameStates
+return controls

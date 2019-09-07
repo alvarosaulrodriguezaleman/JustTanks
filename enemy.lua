@@ -2,42 +2,47 @@ local anim = require "utils/animation"
 local filters = require "utils/collisionFilters"
 require "lib/class"
 
-local spritesheet = love.graphics.newImage('assets/enemy.png')
-
-Enemy = class(function(obj, id, type, x, y)
+Enemy = class(function(obj, id, type, x, y, w, h, speed)
     obj.id = id
     obj.type = type
-    obj.spritesheet = spritesheet
-    obj.animations = anim.getDirectionalQuads(spritesheet, 0, 0, 32, 32, 4)
-    obj.currentFrame = 1
-    obj.elapsedFrameTime = 0
+    obj.image = love.graphics.newImage("assets/enemy"..type..".png")
+    obj.barrelImage = love.graphics.newImage("assets/enemy"..type.."_barrel.png")
+    obj.bulletImage = love.graphics.newImage("assets/enemy"..type.."_bullet.png")
     obj.x = x
     obj.y = y
-    obj.width = 32
-    obj.height = 32
-    obj.speed = 40
+    obj.dx = 0
+    obj.dy = 0
+    obj.angle = 0
+    obj.desiredAngle = 0
+    obj.rotationSpeed = math.pi
+    obj.width = w
+    obj.height = h
+    obj.speed = speed
     obj.wantsUp = false
     obj.wantsRight = false
     obj.wantsDown = false
     obj.wantsLeft = false
     obj.isEnemy = true
-    obj.animation = obj.animations.down
   end)
 
 function Enemy:update(dt)
-  self.currentFrame, self.elapsedFrameTime = anim.getFrame(dt, self.currentFrame, self.elapsedFrameTime, 0.25, 4)
   self:processMovement(dt)
   self:processAttacks(dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.enemy)
 end
 
 function Enemy:draw()
-  love.graphics.draw(self.spritesheet, self.animation[self.currentFrame], math.floor(self.x), math.floor(self.y))
+  love.graphics.draw(self.image, math.floor(self.x + self.width / 2), math.floor(self.y + self.height / 2), self.angle, 1, 1, 17, 17)
+  local barrelAngle = animation.getAngle(self.x, self.y, self.width, self.height, player.x + player.width/2, player.y + player.width/2) - math.pi/2 + 0.05
+  love.graphics.draw(self.barrelImage, math.floor(self.x + self.width/2), math.floor(self.y + self.height/2), barrelAngle, 1, 1, 6, 6)
 end
 
 function Enemy.init(id, type, x, y)
   if type == 1 then
-    enemy = Enemy(id, 1, x, y)
+    enemy = Enemy(id, 1, x, y, 32, 32, 40)
+
+    enemy.bulletWidth = 8
+    enemy.bulletHeight = 10
     enemy.elapsedMovementTime = 0
     enemy.movementTimeThreshold = 0
     enemy.elapsedAttackTime = 0
@@ -71,26 +76,35 @@ function Enemy:processMovement(dt)
   end
 
   if self.wantsUp then
-    self.y = self.y - self.speed * dt
-    self.animation = self.animations.up
+    self.dy = -self.speed
   end
   if self.wantsDown then
-    self.y = self.y + self.speed * dt
-    self.animation = self.animations.down
+    self.dy = self.speed
+  end
+  if self.wantsUp == self.wantsDown then
+    self.dy = 0
   end
   if self.wantsLeft then
-    self.x = self.x - self.speed * dt
-    self.animation = self.animations.left
+    self.dx = -self.speed
   end
   if self.wantsRight then
-    self.x = self.x + self.speed * dt
-    self.animation = self.animations.right
+    self.dx = self.speed
+  end
+  if self.wantsLeft == self.wantsRight then
+    self.dx = 0
   end
 
-  if not self.wantsUp and not self.wantsDown and
-		 not self.wantsLeft and not self.wantsRight then
-		self.currentFrame = 1
-	end
+  self.x = self.x + (self.dx * dt)
+	self.y = self.y + (self.dy * dt)
+
+  local aux = self.desiredAngle
+  if self.dy == 0 and self.dx == 0 then
+    self.desiredAngle = aux
+  else
+    self.desiredAngle = math.atan2(-self.dy, -self.dx)
+  end
+
+  self.angle = animation.smoothRotation(dt, self.angle, self.desiredAngle, self.rotationSpeed)
 end
 
 function Enemy:randomMovement(dt)
@@ -120,12 +134,14 @@ function Enemy:shootAtPlayer(dt)
   if self.elapsedAttackTime > self.attackTimeThreshold then
     self.elapsedAttackTime = 0
     self.attackTimeThreshold = love.math.random(1, 2) + love.math.random()
-    self:shoot(player.x, player.y)
+    self:shoot(player.x + player.width / 2, player.y + player.height / 2)
   end
 end
 
 function Enemy:shoot(x, y)
-  Bullet.shoot(self.x, self.y, self.width, self.height, x, y, self.bulletSpeed, self.bouncesLeft, self.maxBulletCount, self.id)
+  Bullet.shoot(self.x, self.y, self.width, self.height, x, y, self.bulletSpeed,
+               self.bouncesLeft, self.maxBulletCount, self.bulletImage,
+               self.bulletWidth, self.bulletHeight, self.id)
 end
 
 function Enemy:destroy()

@@ -32,4 +32,40 @@ function animation.getFrame(dt, currentFrame, elapsedTime, threshold, frameCount
   return currentFrame, elapsedTime
 end
 
+function animation.smoothRotation(dt, currentAngle, desiredAngle, rotationSpeed)
+  local current = currentAngle -- current rotation in radians
+  local target = desiredAngle -- desired angle in radians
+  local difference = (target - current + math.pi) % (2 * math.pi) - math.pi
+
+  if difference == 0 then -- nothing to be done here
+      return current
+  end
+
+  local rate = rotationSpeed -- radians turned per second
+  local change = rate * dt -- r/s * delta(change in time)
+
+  if difference < 0 then
+      -- make change negative, since difference is as well
+      change = change * -1
+
+      -- If (current + change > target), settle for the lesser difference.
+      -- This keeps us from "overshooting" the player's rotation
+      -- towards a particular target.
+      change = math.max(change, difference)
+  else
+      change = math.min(change, difference)
+  end
+
+  return current + change
+end
+
+function animation.getAngle(x, y, w, h, targetX, targetY)
+  local startX = x + w / 2
+  local startY = y + h / 2
+  local endX = targetX
+  local endY = targetY
+
+  return math.atan2((endY - startY), (endX - startX)), startX, startY
+end
+
 return animation

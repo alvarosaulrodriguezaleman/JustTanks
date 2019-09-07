@@ -6,16 +6,17 @@ local spritesheet = love.graphics.newImage('assets/bullet.png')
 local bullets = {}
 local bulletID = 1
 
-Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft, isEnemyBullet, shooterID)
+Bullet = class(function(obj, id, x, y, dx, dy, w, h, image, bouncesLeft, isEnemyBullet, shooterID)
     obj.id = id
-    obj.spritesheet = spritesheet
-    obj.animation = anim.getQuads(spritesheet, 0, 0, 8, 8, 4)
+    obj.image = image
     obj.currentFrame = love.math.random(1, 4)
     obj.elapsedTime = 0
     obj.x = x
     obj.y = y
     obj.dx = dx
     obj.dy = dy
+    obj.width = w
+    obj.height = h
     obj.bouncesLeft = bouncesLeft
     obj.isBullet = true
     obj.isEnemyBullet = isEnemyBullet
@@ -23,7 +24,7 @@ Bullet = class(function(obj, id, x, y, dx, dy, bouncesLeft, isEnemyBullet, shoot
   end)
 
 function Bullet:update(dt)
-  -- if #bullets == 0 then return end
+  if #bullets == 0 then return end
   self.x = self.x + (self.dx * dt)
 	self.y = self.y + (self.dy * dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.bullets)
@@ -32,7 +33,7 @@ function Bullet:update(dt)
 end
 
 function Bullet:draw()
-  love.graphics.draw(self.spritesheet, self.animation[self.currentFrame], math.floor(self.x), math.floor(self.y))
+  love.graphics.draw(self.image, math.floor(self.x + self.width / 2), math.floor(self.y + self.height / 2), math.atan2(self.dy, self.dx) + math.pi / 2, 1, 1, self.width / 2, self.height / 2)
 end
 
 function Bullet:destroy()
@@ -67,8 +68,8 @@ function Bullet:resolveCollisions(cols, len)
       end
     end
     if other.isEnemy and not self.isEnemyBullet or other.isPlayer and self.isEnemyBullet or other.isBullet then
+      SCREEN_SHAKE = true
       Timer.during(0.2, function()
-        SCREEN_SHAKE = true
       end, function()
         SCREEN_SHAKE = false
       end)
@@ -78,23 +79,18 @@ function Bullet:resolveCollisions(cols, len)
   end
 end
 
-function Bullet.shoot(x, y, w, h, targetX, targetY, bulletSpeed, bouncesLeft, maxBulletCount, id)
+function Bullet.shoot(x, y, w, h, targetX, targetY, bulletSpeed, bouncesLeft, maxBulletCount, image, bulletWidth, bulletHeight, id)
   id = id or -1
   local isEnemyBullet = id ~= -1 and true or false
   if Bullet.getNumberOfBullets(id) < maxBulletCount then
-    local startX = x + w / 2
-    local startY = y + h / 2
-    local endX = targetX
-    local endY = targetY
-
-    local angle = math.atan2((endY - startY), (endX - startX))
+    local angle, startX, startY = animation.getAngle(x, y, w, h, targetX, targetY)
 
     local bulletDx = bulletSpeed * math.cos(angle)
     local bulletDy = bulletSpeed * math.sin(angle)
 
-    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, bouncesLeft, isEnemyBullet)
+    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, bulletWidth, bulletHeight, image, bouncesLeft, isEnemyBullet)
     table.insert(bullets, bullet)
-    world:add(bullet, bullet.x, bullet.y, 8, 8)
+    world:add(bullet, bullet.x, bullet.y, bullet.width, bullet.height)
     bulletID = bulletID + 1
   end
 end
