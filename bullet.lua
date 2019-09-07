@@ -41,7 +41,7 @@ function Bullet:destroy()
       table.remove(bullets, i)
     end
   end
-  world:remove(self)
+  pcall(function() world:remove(self) end)
 end
 
 function Bullet.init()

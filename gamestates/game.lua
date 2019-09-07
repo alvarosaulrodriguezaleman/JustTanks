@@ -75,10 +75,10 @@ function game:mousepressed(x, y, button, istouch)
 end
 
 function game.drawStatusText()
-  love.graphics.setFont(love.graphics.newFont(20))
+  love.graphics.setFont(font20)
   love.graphics.print("Level: " .. level, 400, 700)
   local aux = "Lives: " .. player.lives
-  love.graphics.print(aux, love.graphics.getWidth() - 400, 700, 0, 1, 1, math.floor(font:getWidth(aux)))
+  love.graphics.print(aux, love.graphics.getWidth() - 400, 700, 0, 1, 1, math.floor(font20:getWidth(aux)))
   --love.graphics.print("Bullets available: " .. player.maxBulletCount - Bullet.getNumberOfBullets(), 50, 720)
 end
 

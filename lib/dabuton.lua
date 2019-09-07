@@ -168,7 +168,7 @@ function button.draw()
 				love.graphics.rectangle("fill", buttonID.xPos, buttonID.yPos, buttonID.width, buttonID.height)
 			end
 			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.print(buttonID.text, buttonID.xPos + math.floor(buttonID.width / 2), buttonID.yPos + math.floor(buttonID.height / 2), 0, 1, 1, math.floor(font:getWidth(buttonID.text) / 2), math.floor(font:getHeight(buttonID.text) / 2))
+			love.graphics.print(buttonID.text, buttonID.xPos + math.floor(buttonID.width / 2), buttonID.yPos + math.floor(buttonID.height / 2), 0, 1, 1, math.floor(font14:getWidth(buttonID.text) / 2), math.floor(font14:getHeight(buttonID.text) / 2))
 		end
 	end
 end

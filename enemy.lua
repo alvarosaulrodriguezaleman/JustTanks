@@ -46,8 +46,9 @@ function Enemy.init(id, type, x, y)
     enemy.elapsedMovementTime = 0
     enemy.movementTimeThreshold = 0
     enemy.elapsedAttackTime = 0
-    enemy.attackTimeThreshold = love.math.random(1, 3) + love.math.random()
-    enemy.maxBulletCount = 2
+    enemy.fireRate = function() return love.math.random(1, 2) + love.math.random() end
+    enemy.attackTimeThreshold = enemy.fireRate()
+    enemy.maxBulletCount = 3
     enemy.bulletSpeed = 140
     enemy.bouncesLeft = 1
   end
@@ -133,7 +134,7 @@ function Enemy:shootAtPlayer(dt)
 
   if self.elapsedAttackTime > self.attackTimeThreshold then
     self.elapsedAttackTime = 0
-    self.attackTimeThreshold = love.math.random(1, 2) + love.math.random()
+    self.attackTimeThreshold = self.fireRate()
     self:shoot(player.x + player.width / 2, player.y + player.height / 2)
   end
 end
