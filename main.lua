@@ -4,6 +4,7 @@ Timer = require "lib/timer"
 Gamestate = require "lib/gamestate"
 inspect = require "lib/inspect"
 button = require "lib/dabuton"
+trail = require "lib/trail"
 
 require "enemy"
 require "bullet"

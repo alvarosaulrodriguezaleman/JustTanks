@@ -15,7 +15,7 @@ filters.bullets = function(item, other)
   if not (other.properties == nil) and other.properties.isWall then return 'bounce' end
   if other.isBullet then return 'touch' end
   if other.isEnemy  and not item.isEnemyBullet then return 'touch' end
-  if other.isPlayer and item.isEnemyBullet then return 'touch' end
+  if other.isPlayer and other.visible and item.isEnemyBullet then return 'touch' end
 end
 
 return filters

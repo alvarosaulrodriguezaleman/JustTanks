@@ -4,6 +4,7 @@ require "lib/class"
 
 local bullets = {}
 local bulletID = 1
+local smokeImage = love.graphics.newImage("assets/smoke.png")
 
 Bullet = class(function(obj, id, x, y, dx, dy, w, h, image, bouncesLeft, isEnemyBullet, shooterID)
     obj.id = id
@@ -20,6 +21,7 @@ Bullet = class(function(obj, id, x, y, dx, dy, w, h, image, bouncesLeft, isEnemy
     obj.isBullet = true
     obj.isEnemyBullet = isEnemyBullet
     obj.shooterID = shooterID
+    obj.trail = nil
   end)
 
 function Bullet:update(dt)
@@ -29,9 +31,12 @@ function Bullet:update(dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.bullets)
   self:resolveCollisions(cols, len)
   self.currentFrame, self.elapsedTime = anim.getFrame(dt, self.currentFrame, self.elapsedTime, 0.05, 4)
+  self.trail:setPosition(self.x + self.width / 2, self.y + self.height / 2):setMotion(-self.dx * 0.2, -self.dy * 0.2)
+  self.trail:update(dt)
 end
 
 function Bullet:draw()
+  self.trail:draw()
   love.graphics.draw(self.image, math.floor(self.x + self.width / 2), math.floor(self.y + self.height / 2), math.atan2(self.dy, self.dx) + math.pi / 2, 1, 1, self.width / 2, self.height / 2)
 end
 
@@ -87,11 +92,27 @@ function Bullet.shoot(x, y, w, h, targetX, targetY, bulletSpeed, bouncesLeft, ma
     local bulletDx = bulletSpeed * math.cos(angle)
     local bulletDy = bulletSpeed * math.sin(angle)
 
-    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, bulletWidth, bulletHeight, image, bouncesLeft, isEnemyBullet)
+    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, bulletWidth, bulletHeight, image, bouncesLeft, isEnemyBullet, id)
+    bullet:initializeTrail()
     table.insert(bullets, bullet)
     world:add(bullet, bullet.x, bullet.y, bullet.width, bullet.height)
     bulletID = bulletID + 1
   end
+end
+
+function Bullet:initializeTrail()
+  self.trail = trail
+      :new({
+        type = "point",
+        content = {
+          type = "image",
+          source = smokeImage
+        },
+        duration = 0.5,
+        amount = 4,
+        fade = "fade"
+      })
+      :setMotion(-self.dx, -self.dy)
 end
 
 function Bullet.getNumberOfBullets(id)

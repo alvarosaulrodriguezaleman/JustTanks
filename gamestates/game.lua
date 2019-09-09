@@ -1,6 +1,7 @@
 local game = {}
 local level
 local number_of_levels = 2
+local victory_achieved = false
 
 function game:enter(previous, n)
   if n > number_of_levels then
@@ -83,8 +84,13 @@ function game.drawStatusText()
 end
 
 function game.checkVictory()
-  if #enemies == 0 then
-    return Gamestate.switch(game, level + 1)
+  if #enemies == 0 and not victory_achieved then
+    victory_achieved = true
+    Timer.during(1, function()
+    end, function()
+      victory_achieved = false
+      return Gamestate.switch(game, level + 1)
+    end)
   end
 end
 

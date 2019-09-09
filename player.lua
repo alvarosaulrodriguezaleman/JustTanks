@@ -5,13 +5,14 @@ local player = {
   image = love.graphics.newImage('assets/player.png'),
   barrelImage = love.graphics.newImage('assets/player_barrel.png'),
   bulletImage = love.graphics.newImage('assets/player_bullet.png'),
+  trailImage = love.graphics.newImage('assets/tracks2.png'),
   lives = 3,
   x = 0,
   y = 0,
   dx = 0,
   dy = 0,
   desiredAngle = 0,
-  rotationSpeed = math.pi * 3,
+  rotationSpeed = math.pi * 2,
   angle = 0,
   width = 32,
   height = 32,
@@ -19,7 +20,7 @@ local player = {
   bulletSpeed = 200,
   bulletWidth = 6,
   bulletHeight = 10,
-  maxBulletCount = 3,
+  maxBulletCount = 5,
   bouncesLeft = 1,
   wantsUp = false,
   wantsRight = false,
@@ -28,11 +29,27 @@ local player = {
   isPlayer = true
 }
 
+player.trail = trail
+    :new({
+      type = "point",
+      content = {
+        type = "image",
+        source = player.trailImage
+      },
+      duration = 1 + player.speed * 0.005,
+      amount = player.speed * 0.2,
+      fade = "fade"
+    })
+    :setMotion(0, 0)
+    :setRotation(player.desiredAngle)
+
 function player.init()
   for k, object in pairs(map.objects) do
   	if object.name == "Player" then
   	  player.x = object.x
       player.y = object.y
+      player.visible = true
+      player.trail:clear()
       world:add(player, player.x, player.y, player.width, player.height)
   		break
   	end
@@ -40,14 +57,20 @@ function player.init()
 end
 
 function player.update(dt)
-  player.processMovement(dt)
-  player.x, player.y, cols, len = world:move(player, player.x, player.y, filters.player)
+  if player.visible then
+    player.processMovement(dt)
+    player.x, player.y, cols, len = world:move(player, player.x, player.y, filters.player)
+  end
+  player.updateTrail(dt)
 end
 
 function player.draw()
-  love.graphics.draw(player.image, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), player.angle, 1, 1, 17, 17)
-  local barrelAngle = animation.getAngle(player.x, player.y, player.width, player.height, (love.mouse.getX() - BASE_TX) / BASE_SX, (love.mouse.getY() - BASE_TY) / BASE_SY) - math.pi/2 - 0.04
-  love.graphics.draw(player.barrelImage, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), barrelAngle, 1, 1, 6, 6)
+  player.trail:draw()
+  if player.visible then
+    love.graphics.draw(player.image, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), player.angle, 1, 1, 17, 17)
+    local barrelAngle = animation.getAngle(player.x, player.y, player.width, player.height, (love.mouse.getX() - BASE_TX) / BASE_SX, (love.mouse.getY() - BASE_TY) / BASE_SY) - math.pi/2 - 0.04
+    love.graphics.draw(player.barrelImage, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), barrelAngle, 1, 1, 6, 6)
+  end
 end
 
 function player.shoot(x, y)
@@ -89,13 +112,29 @@ function player.processMovement(dt)
   player.angle = animation.smoothRotation(dt, player.angle, player.desiredAngle, player.rotationSpeed)
 end
 
-function player.destroy()
-  if player.lives > 1 then
-    RESTART = true
-    player.lives = player.lives - 1
-  else
-    return Gamestate.switch(menu)
+function player.updateTrail(dt)
+  if ((player.dx == 0 and player.dy == 0) and player.trail.active) or not player.visible then
+    player.trail:disable()
+  elseif not player.trail.active then
+    player.trail:enable()
+  end
+  player.trail:setPosition(player.x + player.width / 2 - player.dx * 0.05, player.y + player.height / 2 - player.dy * 0.05):setRotation(player.desiredAngle + math.pi/2)
+  player.trail:update(dt)
 end
+
+function player.destroy()
+  if player.visible then
+    player.visible = false
+    Timer.during(1, function()
+    end, function()
+      if player.lives > 1 then
+        RESTART = true
+        player.lives = player.lives - 1
+      else
+        return Gamestate.switch(menu)
+      end
+    end)
+  end
 end
 
 return player

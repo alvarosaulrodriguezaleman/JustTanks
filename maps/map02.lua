@@ -120,7 +120,7 @@ return {
         {
           id = 7,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 786,
           y = 338,
@@ -133,7 +133,7 @@ return {
         {
           id = 8,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 785,
           y = 466,
@@ -146,7 +146,7 @@ return {
         {
           id = 9,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 241,
           y = 466,
@@ -159,7 +159,7 @@ return {
         {
           id = 10,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 240,
           y = 209,
@@ -172,7 +172,7 @@ return {
         {
           id = 11,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 239,
           y = 337,
@@ -185,7 +185,7 @@ return {
         {
           id = 12,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 785,
           y = 210,
@@ -198,7 +198,7 @@ return {
         {
           id = 13,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 509,
           y = 467,
@@ -211,7 +211,7 @@ return {
         {
           id = 14,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 512,
           y = 212,
@@ -224,7 +224,7 @@ return {
         {
           id = 15,
           name = "Enemy",
-          type = "",
+          type = "1",
           shape = "rectangle",
           x = 514,
           y = 336,

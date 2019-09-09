@@ -50,6 +50,7 @@ function menu:draw()
   love.graphics.setFont(font60)
   love.graphics.print("Just Tanks.", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
   love.graphics.setFont(font14)
+  love.graphics.print("WASD or arrow keys to move, left click to shoot.", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2 + 75, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
   button.draw()
 end
 

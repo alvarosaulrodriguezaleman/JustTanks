@@ -2,6 +2,7 @@ local anim = require "utils/animation"
 local filters = require "utils/collisionFilters"
 require "lib/class"
 
+local trailImage = love.graphics.newImage('assets/tracks2.png')
 Enemy = class(function(obj, id, type, x, y, w, h, speed)
     obj.id = id
     obj.type = type
@@ -23,23 +24,39 @@ Enemy = class(function(obj, id, type, x, y, w, h, speed)
     obj.wantsDown = false
     obj.wantsLeft = false
     obj.isEnemy = true
+    obj.trail = nil
   end)
 
 function Enemy:update(dt)
   self:processMovement(dt)
   self:processAttacks(dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.enemy)
+  self:updateTrail(dt)
 end
 
 function Enemy:draw()
+  self.trail:draw()
   love.graphics.draw(self.image, math.floor(self.x + self.width / 2), math.floor(self.y + self.height / 2), self.angle, 1, 1, 17, 17)
   local barrelAngle = animation.getAngle(self.x, self.y, self.width, self.height, player.x + player.width/2, player.y + player.width/2) - math.pi/2 + 0.05
   love.graphics.draw(self.barrelImage, math.floor(self.x + self.width/2), math.floor(self.y + self.height/2), barrelAngle, 1, 1, 6, 6)
 end
 
 function Enemy.init(id, type, x, y)
-  if type == 1 then
-    enemy = Enemy(id, 1, x, y, 32, 32, 40)
+  if type == "1" then
+    enemy = Enemy(id, 1, x, y, 32, 32, 0)
+
+    enemy.bulletWidth = 8
+    enemy.bulletHeight = 10
+    enemy.elapsedAttackTime = 0
+    enemy.fireRate = function() return love.math.random(2, 3) + love.math.random() end
+    enemy.attackTimeThreshold = enemy.fireRate()
+    enemy.maxBulletCount = 1
+    enemy.bulletSpeed = 100
+    enemy.bouncesLeft = 1
+  end
+
+  if type == "2" then
+    enemy = Enemy(id, 2, x, y, 32, 32, 40)
 
     enemy.bulletWidth = 8
     enemy.bulletHeight = 10
@@ -53,6 +70,19 @@ function Enemy.init(id, type, x, y)
     enemy.bouncesLeft = 1
   end
 
+  if type == "3" then
+    enemy = Enemy(id, 3, x, y, 32, 32, 0)
+
+    enemy.bulletWidth = 6
+    enemy.bulletHeight = 10
+    enemy.elapsedAttackTime = 0
+    enemy.fireRate = function() return 1 + love.math.random() end
+    enemy.attackTimeThreshold = enemy.fireRate()
+    enemy.maxBulletCount = 15
+    enemy.bulletSpeed = 120
+    enemy.bouncesLeft = 2
+  end
+
   return enemy
 end
 
@@ -61,7 +91,8 @@ function Enemy.initAllEnemies()
   id = 1
   for k, object in pairs(map.objects) do
   	if object.name == "Enemy" then
-      enemy = Enemy.init(id, 1, object.x, object.y)
+      enemy = Enemy.init(id, object.type, object.x, object.y)
+      enemy:initializeTrail()
       table.insert(enemies, enemy)
       world:add(enemy, enemy.x, enemy.y, enemy.width, enemy.height)
       id = id + 1
@@ -71,8 +102,34 @@ function Enemy.initAllEnemies()
   return enemies
 end
 
+function Enemy:initializeTrail()
+  self.trail = trail
+      :new({
+        type = "point",
+        content = {
+          type = "image",
+          source = trailImage
+        },
+        duration = 1 + self.speed * 0.005,
+        amount = self.speed * 0.2,
+        fade = "fade"
+      })
+      :setMotion(0, 0)
+      :setRotation(self.desiredAngle)
+end
+
+function Enemy:updateTrail(dt)
+  if (self.dx == 0 and self.dy == 0) and self.trail.active then
+    self.trail:disable()
+  elseif not self.trail.active then
+    self.trail:enable()
+  end
+  self.trail:setPosition(self.x + self.width / 2 - self.dx * 0.05, self.y + self.height / 2 - self.dy * 0.05):setRotation(self.desiredAngle + math.pi/2)
+  self.trail:update(dt)
+end
+
 function Enemy:processMovement(dt)
-  if self.type == 1 then
+  if self.type == 2 then
     self:randomMovement(dt)
   end
 
@@ -124,7 +181,7 @@ function Enemy:randomMovement(dt)
 end
 
 function Enemy:processAttacks(dt)
-  if self.type == 1 then
+  if self.type >= 1 and self.type <= 3 then
     self:shootAtPlayer(dt)
   end
 end
