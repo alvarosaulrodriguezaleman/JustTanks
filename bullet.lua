@@ -77,6 +77,9 @@ function Bullet:resolveCollisions(cols, len)
       end, function()
         SCREEN_SHAKE = false
       end)
+      if other.isBullet then
+        explosions.new(self.x, self.y, 2, 0.2)
+      end
       self:destroy()
       other:destroy()
     end
@@ -87,6 +90,8 @@ function Bullet.shoot(x, y, w, h, targetX, targetY, bulletSpeed, bouncesLeft, ma
   id = id or -1
   local isEnemyBullet = id ~= -1 and true or false
   if Bullet.getNumberOfBullets(id) < maxBulletCount then
+    x = x - bulletWidth / 2
+    y = y - bulletHeight / 2
     local angle, startX, startY = animation.getAngle(x, y, w, h, targetX, targetY)
 
     local bulletDx = bulletSpeed * math.cos(angle)

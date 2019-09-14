@@ -8,6 +8,7 @@ trail = require "lib/trail"
 
 require "enemy"
 require "bullet"
+explosions = require "explosion"
 player = require "player"
 controls = require "controls"
 state = controls.game

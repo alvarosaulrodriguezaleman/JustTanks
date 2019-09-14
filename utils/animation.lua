@@ -17,14 +17,19 @@ function animation.getDirectionalQuads(spritesheet, x, y, w, h, n)
   return quads
 end
 
-function animation.getFrame(dt, currentFrame, elapsedTime, threshold, frameCount)
+function animation.getFrame(dt, currentFrame, elapsedTime, threshold, frameCount, loop)
+  loop = loop or "yes"
   elapsedTime = elapsedTime + dt
 
   if(elapsedTime > threshold) then
     if(currentFrame < frameCount) then
         currentFrame = currentFrame + 1
     else
+      if loop == "no" then
+        currentFrame = -1
+      else
         currentFrame = 1
+      end
     end
     elapsedTime = 0
   end

@@ -17,7 +17,7 @@ local player = {
   width = 32,
   height = 32,
   speed = 100,
-  bulletSpeed = 200,
+  bulletSpeed = 130,
   bulletWidth = 6,
   bulletHeight = 10,
   maxBulletCount = 5,
@@ -68,8 +68,9 @@ function player.draw()
   player.trail:draw()
   if player.visible then
     love.graphics.draw(player.image, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), player.angle, 1, 1, 17, 17)
-    local barrelAngle = animation.getAngle(player.x, player.y, player.width, player.height, (love.mouse.getX() - BASE_TX) / BASE_SX, (love.mouse.getY() - BASE_TY) / BASE_SY) - math.pi/2 - 0.04
+    local barrelAngle = animation.getAngle(player.x - 3, player.y - 3, player.width, player.height, (love.mouse.getX() - BASE_TX) / BASE_SX, (love.mouse.getY() - BASE_TY) / BASE_SY) - math.pi/2
     love.graphics.draw(player.barrelImage, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), barrelAngle, 1, 1, 6, 6)
+    --love.graphics.points(math.floor(player.x + player.width / 2), math.floor(player.y + player.height / 2))
   end
 end
 
@@ -125,6 +126,7 @@ end
 function player.destroy()
   if player.visible then
     player.visible = false
+    explosions.new(player.x + player.width / 2, player.y + player.height / 2, 1, 1)
     Timer.during(1, function()
     end, function()
       if player.lives > 1 then

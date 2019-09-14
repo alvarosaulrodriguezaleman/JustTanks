@@ -182,7 +182,7 @@ end
 
 function Enemy:processAttacks(dt)
   if self.type >= 1 and self.type <= 3 then
-    self:shootAtPlayer(dt)
+    --self:shootAtPlayer(dt)
   end
 end
 
@@ -209,4 +209,5 @@ function Enemy:destroy()
     end
   end
   world:remove(self)
+  explosions.new(self.x + self.width / 2, self.y + self.height / 2, 1, 1)
 end

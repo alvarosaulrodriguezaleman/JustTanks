@@ -15,6 +15,7 @@ function game:enter(previous, n)
   player.init()
   enemies = Enemy.initAllEnemies()
   Bullet.init()
+  explosions.clear()
   state = controls.game
   RESTART = false
   SCREEN_SHAKE = false
@@ -40,6 +41,7 @@ function game:update(dt)
   for i, bullet in ipairs(Bullet.getBullets()) do
     bullet:update(dt)
   end
+  explosions.update(dt)
 end
 
 function game:draw()
@@ -63,6 +65,7 @@ function game:draw()
   for i, bullet in ipairs(Bullet.getBullets()) do
     bullet:draw()
   end
+  explosions.draw()
 
   game.drawStatusText()
 	--love.graphics.setColor(1, 0, 0)
