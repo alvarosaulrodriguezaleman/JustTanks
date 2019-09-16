@@ -239,6 +239,7 @@ end
 
 function button.setVisibility(id, bool)
 	id.flags.visible = bool
+	id.flags.active = bool
 end
 
 function button.setActivity(id, bool, reset)

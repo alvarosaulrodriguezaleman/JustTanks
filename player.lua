@@ -13,11 +13,12 @@ local player = {
   dy = 0,
   desiredAngle = 0,
   rotationSpeed = math.pi * 2,
+  barrelAngle = 0,
   angle = 0,
   width = 32,
   height = 32,
-  speed = 100,
-  bulletSpeed = 130,
+  speed = 80,
+  bulletSpeed = 140,
   bulletWidth = 6,
   bulletHeight = 10,
   maxBulletCount = 5,
@@ -60,6 +61,7 @@ function player.update(dt)
   if player.visible then
     player.processMovement(dt)
     player.x, player.y, cols, len = world:move(player, player.x, player.y, filters.player)
+    player.barrelAngle = animation.getAngle(player.x - 3, player.y - 3, player.width, player.height, (love.mouse.getX() - BASE_TX) / BASE_SX, (love.mouse.getY() - BASE_TY) / BASE_SY) - math.pi/2
   end
   player.updateTrail(dt)
 end
@@ -68,8 +70,8 @@ function player.draw()
   player.trail:draw()
   if player.visible then
     love.graphics.draw(player.image, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), player.angle, 1, 1, 17, 17)
-    local barrelAngle = animation.getAngle(player.x - 3, player.y - 3, player.width, player.height, (love.mouse.getX() - BASE_TX) / BASE_SX, (love.mouse.getY() - BASE_TY) / BASE_SY) - math.pi/2
-    love.graphics.draw(player.barrelImage, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), barrelAngle, 1, 1, 6, 6)
+
+    love.graphics.draw(player.barrelImage, math.floor(player.x + player.width/2), math.floor(player.y + player.height/2), player.barrelAngle, 1, 1, 6, 6)
     --love.graphics.points(math.floor(player.x + player.width / 2), math.floor(player.y + player.height / 2))
   end
 end
@@ -80,7 +82,7 @@ function player.shoot(x, y)
                player.bulletImage, player.bulletWidth, player.bulletHeight)
 end
 
-function player.processMovement(dt)
+function player.processDirection()
   if player.wantsUp then
     player.dy = -player.speed
   end
@@ -99,6 +101,10 @@ function player.processMovement(dt)
   if player.wantsLeft == player.wantsRight then
     player.dx = 0
   end
+end
+
+function player.processMovement(dt)
+  player.processDirection()
 
   player.x = player.x + (player.dx * dt)
 	player.y = player.y + (player.dy * dt)

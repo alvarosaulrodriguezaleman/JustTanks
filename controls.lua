@@ -9,7 +9,9 @@ controls.game = {
 		releaseUp = function() player.wantsUp = false end,
     releaseDown = function() player.wantsDown = false end,
     releaseLeft = function() player.wantsLeft = false end,
-		releaseRight = function() player.wantsRight = false end
+		releaseRight = function() player.wantsRight = false end,
+    enterPause = function() print("push pause")
+      return Gamestate.push(pause) end
   },
   keys = {
     w = "moveUp",
@@ -19,7 +21,8 @@ controls.game = {
     a = "moveLeft",
 		left = "moveLeft",
     d = "moveRight",
-		right = "moveRight"
+		right = "moveRight",
+    escape = "enterPause"
   },
 	keysReleased = {
 		w = "releaseUp",
@@ -30,6 +33,111 @@ controls.game = {
 		left = "releaseLeft",
     d = "releaseRight",
 		right = "releaseRight"
+	}
+}
+
+controls.menu = {
+  bindings = {
+    bufferMoveUp = function() player.wantsUp = true end,
+    bufferMoveDown = function() player.wantsDown = true end,
+    bufferMoveLeft = function() player.wantsLeft = true end,
+		bufferMoveRight = function() player.wantsRight = true end,
+		bufferReleaseUp = function() player.wantsUp = false end,
+    bufferReleaseDown = function() player.wantsDown = false end,
+    bufferReleaseLeft = function() player.wantsLeft = false end,
+		bufferReleaseRight = function() player.wantsRight = false end
+  },
+  keys = {
+    w = "bufferMoveUp",
+		up = "bufferMoveUp",
+    s = "bufferMoveDown",
+		down = "bufferMoveDown",
+    a = "bufferMoveLeft",
+		left = "bufferMoveLeft",
+    d = "bufferMoveRight",
+		right = "bufferMoveRight",
+  },
+	keysReleased = {
+    w = "bufferReleaseUp",
+		up = "bufferReleaseUp",
+    s = "bufferReleaseDown",
+		down = "bufferReleaseDown",
+    a = "bufferReleaseLeft",
+		left = "bufferReleaseLeft",
+    d = "bufferReleaseRight",
+		right = "bufferReleaseRight"
+	}
+}
+
+controls.pause = {
+  bindings = {
+    bufferMoveUp = function() player.wantsUp = true end,
+    bufferMoveDown = function() player.wantsDown = true end,
+    bufferMoveLeft = function() player.wantsLeft = true end,
+		bufferMoveRight = function() player.wantsRight = true end,
+		bufferReleaseUp = function() player.wantsUp = false end,
+    bufferReleaseDown = function() player.wantsDown = false end,
+    bufferReleaseLeft = function() player.wantsLeft = false end,
+		bufferReleaseRight = function() player.wantsRight = false end,
+    backToGame = function () print("pop")
+      Gamestate.pop() end,
+  },
+  keys = {
+    escape = "backToGame",
+    w = "bufferMoveUp",
+		up = "bufferMoveUp",
+    s = "bufferMoveDown",
+		down = "bufferMoveDown",
+    a = "bufferMoveLeft",
+		left = "bufferMoveLeft",
+    d = "bufferMoveRight",
+		right = "bufferMoveRight",
+  },
+	keysReleased = {
+    w = "bufferReleaseUp",
+		up = "bufferReleaseUp",
+    s = "bufferReleaseDown",
+		down = "bufferReleaseDown",
+    a = "bufferReleaseLeft",
+		left = "bufferReleaseLeft",
+    d = "bufferReleaseRight",
+		right = "bufferReleaseRight"
+	}
+}
+
+controls.options = {
+  bindings = {
+    bufferMoveUp = function() player.wantsUp = true end,
+    bufferMoveDown = function() player.wantsDown = true end,
+    bufferMoveLeft = function() player.wantsLeft = true end,
+		bufferMoveRight = function() player.wantsRight = true end,
+		bufferReleaseUp = function() player.wantsUp = false end,
+    bufferReleaseDown = function() player.wantsDown = false end,
+    bufferReleaseLeft = function() player.wantsLeft = false end,
+		bufferReleaseRight = function() player.wantsRight = false end,
+    backToPreviousScreen = function () print("pop")
+      Gamestate.pop() end,
+  },
+  keys = {
+    escape = "backToPreviousScreen",
+    w = "bufferMoveUp",
+		up = "bufferMoveUp",
+    s = "bufferMoveDown",
+		down = "bufferMoveDown",
+    a = "bufferMoveLeft",
+		left = "bufferMoveLeft",
+    d = "bufferMoveRight",
+		right = "bufferMoveRight",
+  },
+	keysReleased = {
+    w = "bufferReleaseUp",
+		up = "bufferReleaseUp",
+    s = "bufferReleaseDown",
+		down = "bufferReleaseDown",
+    a = "bufferReleaseLeft",
+		left = "bufferReleaseLeft",
+    d = "bufferReleaseRight",
+		right = "bufferReleaseRight"
 	}
 }
 

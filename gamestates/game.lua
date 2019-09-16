@@ -7,7 +7,7 @@ function game:enter(previous, n)
   if n > number_of_levels then
     return Gamestate.switch(menu)
   end
-  love.graphics.setFont(love.graphics.newFont(20))
+  love.graphics.setFont(font20)
   love.mouse.setCursor(love.mouse.newCursor("assets/cursor.png", 14, 14))
 	world = bump.newWorld(32)
 	map = sti("maps/map0"..n..".lua", {"bump"})
@@ -25,6 +25,10 @@ function game:enter(previous, n)
   BASE_SY = 1
 
   level = n
+end
+
+function game:resume()
+  state = controls.game
 end
 
 function game:update(dt)

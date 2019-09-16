@@ -5,16 +5,19 @@ Gamestate = require "lib/gamestate"
 inspect = require "lib/inspect"
 button = require "lib/dabuton"
 trail = require "lib/trail"
+loveframes = require "lib/loveframes"
 
 require "enemy"
 require "bullet"
 explosions = require "explosion"
 player = require "player"
 controls = require "controls"
-state = controls.game
+state = controls.menu
 
 menu = require "gamestates/menu"
 game = require "gamestates/game"
+pause = require "gamestates/pause"
+options = require "gamestates/options"
 
 function inputHandler(input)
   local action = state.bindings[input]

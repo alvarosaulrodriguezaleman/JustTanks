@@ -48,7 +48,7 @@ function Enemy.init(id, type, x, y)
     enemy.bulletWidth = 8
     enemy.bulletHeight = 10
     enemy.elapsedAttackTime = 0
-    enemy.fireRate = function() return love.math.random(2, 3) + love.math.random() end
+    enemy.fireRate = function() return love.math.random(1, 3) + love.math.random() end
     enemy.attackTimeThreshold = enemy.fireRate()
     enemy.maxBulletCount = 1
     enemy.bulletSpeed = 100
@@ -182,7 +182,7 @@ end
 
 function Enemy:processAttacks(dt)
   if self.type >= 1 and self.type <= 3 then
-    --self:shootAtPlayer(dt)
+    self:shootAtPlayer(dt)
   end
 end
 
