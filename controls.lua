@@ -10,8 +10,7 @@ controls.game = {
     releaseDown = function() player.wantsDown = false end,
     releaseLeft = function() player.wantsLeft = false end,
 		releaseRight = function() player.wantsRight = false end,
-    enterPause = function() print("push pause")
-      return Gamestate.push(pause) end
+    enterPause = function() return Gamestate.push(pause) end
   },
   keys = {
     w = "moveUp",
@@ -79,8 +78,7 @@ controls.pause = {
     bufferReleaseDown = function() player.wantsDown = false end,
     bufferReleaseLeft = function() player.wantsLeft = false end,
 		bufferReleaseRight = function() player.wantsRight = false end,
-    backToGame = function () print("pop")
-      Gamestate.pop() end,
+    backToGame = function () Gamestate.pop() end,
   },
   keys = {
     escape = "backToGame",
@@ -115,8 +113,7 @@ controls.options = {
     bufferReleaseDown = function() player.wantsDown = false end,
     bufferReleaseLeft = function() player.wantsLeft = false end,
 		bufferReleaseRight = function() player.wantsRight = false end,
-    backToPreviousScreen = function () print("pop")
-      Gamestate.pop() end,
+    backToPreviousScreen = function () Gamestate.pop() end,
   },
   keys = {
     escape = "backToPreviousScreen",

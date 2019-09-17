@@ -1,107 +1,59 @@
 local menu = {}
 
-local classicButtonID
-local optionsButtonID
+local W, H = love.graphics.getWidth(), love.graphics.getHeight()
+local classicButton
+local optionsButton
 
 function menu:init()
   font14 = love.graphics.newFont(14)
   font20 = love.graphics.newFont(20)
   font60 = love.graphics.newFont(60)
 
-  local classicButtonFlags = {
-  		xPos = love.graphics.getWidth() / 3,
-  		yPos = love.graphics.getHeight() / 2 - math.floor(font60:getHeight("Just Tanks") / 3),
-  		width = 100,
-  		height = 50,
-      text = "Classic",
+  classicButton = gui:button('Classic', {W/3, H/2-math.floor(font60:getHeight("Just Tanks") / 3), 100, 50})
+  classicButton.click = function(this) return Gamestate.switch(game, 1) end
+  classicButton.style.default = {45/255, 150/255, 89/255, 1}
+  classicButton.style.hilite = {60/255, 165/255, 104/255, 1}
 
-  		color = {
-  			red = 45/255,
-  			green = 150/255,
-  			blue = 89/255,
-  		},
-
-  		border = {
-  			width = 2,
-  			red = 0,
-  			green = 0,
-  			blue = 0,
-  		},
-
-      onClick = {
-        func = function () end,
-  			args = {},
-      },
-
-  		onRelease = {
-  			func = function (to, map) return Gamestate.switch(game, 1) end,
-  			args = {game, 1},
-  		},
-  	}
-
-    local optionsButtonFlags = {
-    		xPos = love.graphics.getWidth() / 3,
-    		yPos = love.graphics.getHeight() / 2 - math.floor(font60:getHeight("Just Tanks") / 3) + 60,
-    		width = 100,
-    		height = 50,
-        text = "Options",
-
-    		color = {
-    			red = 45/255,
-    			green = 120/255,
-    			blue = 89/255,
-    		},
-
-    		border = {
-    			width = 2,
-    			red = 0,
-    			green = 0,
-    			blue = 0,
-    		},
-
-        onClick = {
-          func = function () end,
-    			args = {},
-        },
-
-    		onRelease = {
-    			func = function (to) return Gamestate.push(to) end,
-    			args = {options},
-    		},
-    	}
-
-  classicButtonID = button.spawn(classicButtonFlags)
-  optionsButtonID = button.spawn(optionsButtonFlags)
+  optionsButton = gui:button('Options', {W/3, H/2-math.floor(font60:getHeight("Just Tanks") / 3) + 60, 100, 50})
+  optionsButton.click = function(this)
+    menu.hideGui()
+    return Gamestate.push(options)
+  end
+  optionsButton.style.default = {45/255, 120/255, 89/255, 1}
+  optionsButton.style.hilite = {60/255, 135/255, 104/255, 1}
 end
 
 function menu:enter()
-  button.setVisibility(classicButtonID, true)
-  button.setVisibility(optionsButtonID, true)
-
+  menu.showGui()
   state = controls.menu
   player.lives = 3
 end
 
 function menu:resume()
+  menu.showGui()
   state = controls.menu
 end
 
 function menu:leave()
-  button.setVisibility(classicButtonID, false)
-  button.setVisibility(optionsButtonID, false)
+  menu.hideGui()
 end
 
-function menu:update(dt)
-  button.update()
+function menu.hideGui()
+  classicButton:hide()
+  optionsButton:hide()
+end
+
+function menu.showGui()
+  classicButton:show()
+  optionsButton:show()
 end
 
 function menu:draw()
 	love.graphics.setBackgroundColor(57/255, 194/255, 114/255, 0)
   love.graphics.setFont(font60)
-  love.graphics.print("Just Tanks", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks") / 2))
+  love.graphics.print("Just Tanks", W / 2, H / 2, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks") / 2))
   love.graphics.setFont(font14)
-  love.graphics.print("WASD or arrow keys to move, left click to shoot.", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2 + 75, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
-  button.draw()
+  love.graphics.print("WASD or arrow keys to move, left click to shoot.", W / 2, H / 2 + 75, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
 end
 
 return menu
