@@ -1438,6 +1438,17 @@ function Map:convertPixelToTile(x, y)
 	end
 end
 
+function Map:getInstanceByPixel(x, y, layerindex)
+	local tilex, tiley = self:convertPixelToTile(x,y)
+	if not layerindex then layerindex = 1 end
+	local gid = self.layers[layerindex].data[tiley+1][tilex+1].gid
+	for i,ins in ipairs(self.tileInstances[gid]) do
+		if ins.x == x and ins.y == y then
+			return ins
+		end
+	end
+end
+
 --- A list of individual layers indexed both by draw order and name
 -- @table Map.layers
 -- @see TileLayer

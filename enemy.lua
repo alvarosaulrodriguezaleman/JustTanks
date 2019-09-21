@@ -2,6 +2,8 @@ local anim = require "utils/animation"
 local filters = require "utils/collisionFilters"
 require "lib/class"
 
+local enemies = {}
+local enemyID = 1
 local trailImage = love.graphics.newImage('assets/tracks2.png')
 Enemy = class(function(obj, id, type, x, y, w, h, speed)
     obj.id = id
@@ -88,18 +90,16 @@ end
 
 function Enemy.initAllEnemies()
   enemies = {}
-  id = 1
+  enemyID = 1
   for k, object in pairs(map.objects) do
   	if object.name == "Enemy" then
-      enemy = Enemy.init(id, object.type, object.x, object.y)
+      enemy = Enemy.init(enemyID, object.type, object.x, object.y)
       enemy:initializeTrail()
       table.insert(enemies, enemy)
       world:add(enemy, enemy.x, enemy.y, enemy.width, enemy.height)
-      id = id + 1
+      enemyID = enemyID + 1
   	end
   end
-
-  return enemies
 end
 
 function Enemy:initializeTrail()
@@ -209,5 +209,9 @@ function Enemy:destroy()
     end
   end
   world:remove(self)
-  explosions.new(self.x + self.width / 2, self.y + self.height / 2, 1, 1)
+  explosions.new(self.x + self.width / 2, self.y + self.height / 2, 1, 0.4)
+end
+
+function Enemy.getEnemies()
+  return enemies
 end

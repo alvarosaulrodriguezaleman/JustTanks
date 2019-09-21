@@ -9,7 +9,6 @@ local smokeImage = love.graphics.newImage("assets/smoke.png")
 Bullet = class(function(obj, id, x, y, dx, dy, w, h, image, bouncesLeft, isEnemyBullet, shooterID)
     obj.id = id
     obj.image = image
-    obj.currentFrame = love.math.random(1, 4)
     obj.elapsedTime = 0
     obj.x = x
     obj.y = y
@@ -30,7 +29,6 @@ function Bullet:update(dt)
 	self.y = self.y + (self.dy * dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.bullets)
   self:resolveCollisions(cols, len)
-  self.currentFrame, self.elapsedTime = anim.getFrame(dt, self.currentFrame, self.elapsedTime, 0.05, 4)
   self.trail:setPosition(self.x + self.width / 2, self.y + self.height / 2):setMotion(-self.dx * 0.2, -self.dy * 0.2)
   self.trail:update(dt)
 end
@@ -71,7 +69,7 @@ function Bullet:resolveCollisions(cols, len)
         self.dy = -self.dy
       end
     end
-    if other.isEnemy and not self.isEnemyBullet or other.isPlayer and self.isEnemyBullet or other.isBullet then
+    if other.isEnemy and not self.isEnemyBullet or other.isPlayer and self.isEnemyBullet or other.isBullet or other.isMine then
       SCREEN_SHAKE = true
       Timer.during(0.2, function()
       end, function()

@@ -3,6 +3,7 @@ local menu = {}
 local W, H = love.graphics.getWidth(), love.graphics.getHeight()
 local classicButton
 local optionsButton
+local quitButton
 
 function menu:init()
   font14 = love.graphics.newFont(14)
@@ -21,6 +22,13 @@ function menu:init()
   end
   optionsButton.style.default = {45/255, 120/255, 89/255, 1}
   optionsButton.style.hilite = {60/255, 135/255, 104/255, 1}
+
+  quitButton = gui:button('Quit', {W/3, H/2-math.floor(font60:getHeight("Just Tanks") / 3) + 120, 100, 50})
+  quitButton.click = function(this)
+    love.event.quit()
+  end
+  quitButton.style.default = {45/255, 120/255, 89/255, 1}
+  quitButton.style.hilite = {60/255, 135/255, 104/255, 1}
 end
 
 function menu:enter()
@@ -41,11 +49,13 @@ end
 function menu.hideGui()
   classicButton:hide()
   optionsButton:hide()
+  quitButton:hide()
 end
 
 function menu.showGui()
   classicButton:show()
   optionsButton:show()
+  quitButton:show()
 end
 
 function menu:draw()

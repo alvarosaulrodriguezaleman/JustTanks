@@ -10,7 +10,8 @@ controls.game = {
     releaseDown = function() player.wantsDown = false end,
     releaseLeft = function() player.wantsLeft = false end,
 		releaseRight = function() player.wantsRight = false end,
-    enterPause = function() return Gamestate.push(pause) end
+    enterPause = function() return Gamestate.push(pause) end,
+    placeMine = function() player.placeMine() end
   },
   keys = {
     w = "moveUp",
@@ -21,7 +22,8 @@ controls.game = {
 		left = "moveLeft",
     d = "moveRight",
 		right = "moveRight",
-    escape = "enterPause"
+    escape = "enterPause",
+    space = "placeMine",
   },
 	keysReleased = {
 		w = "releaseUp",

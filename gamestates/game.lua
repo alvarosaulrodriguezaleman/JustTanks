@@ -1,6 +1,6 @@
 local game = {}
 local level
-local number_of_levels = 2
+local number_of_levels = 3
 local victory_achieved = false
 
 function game:enter(previous, n)
@@ -13,11 +13,14 @@ function game:enter(previous, n)
 	map = sti("maps/map0"..n..".lua", {"bump"})
 	map:bump_init(world)
   player.init()
-  enemies = Enemy.initAllEnemies()
+  Enemy.initAllEnemies()
+  Mine.initAllMines()
   Bullet.init()
   explosions.clear()
   state = controls.game
+
   RESTART = false
+  LEVEL_COMPLETED = false
   SCREEN_SHAKE = false
   BASE_TX = 0
   BASE_TY = 0
@@ -39,11 +42,14 @@ function game:update(dt)
   Timer.update(dt)
 	map:update(dt)
 	player.update(dt)
-  for i, enemy in ipairs(enemies) do
+  for i, enemy in ipairs(Enemy.getEnemies()) do
     enemy:update(dt)
   end
   for i, bullet in ipairs(Bullet.getBullets()) do
     bullet:update(dt)
+  end
+  for i, mine in ipairs(Mine.getMines()) do
+    mine:update(dt)
   end
   explosions.update(dt)
 end
@@ -63,11 +69,14 @@ function game:draw()
   end
 
   player.draw()
-  for i, enemy in ipairs(enemies) do
+  for i, enemy in ipairs(Enemy.getEnemies()) do
     enemy:draw()
   end
   for i, bullet in ipairs(Bullet.getBullets()) do
     bullet:draw()
+  end
+  for i, mine in ipairs(Mine.getMines()) do
+    mine:draw()
   end
   explosions.draw()
 
@@ -91,13 +100,16 @@ function game.drawStatusText()
 end
 
 function game.checkVictory()
-  if #enemies == 0 and not victory_achieved then
+  if #Enemy.getEnemies() == 0 and not victory_achieved then
     victory_achieved = true
-    Timer.during(1, function()
-    end, function()
-      victory_achieved = false
-      return Gamestate.switch(game, level + 1)
-    end)
+    if not LEVEL_COMPLETED then
+      LEVEL_COMPLETED = true
+      Timer.during(1, function()
+      end, function()
+        victory_achieved = false
+        return Gamestate.switch(game, level + 1)
+      end)
+    end
   end
 end
 

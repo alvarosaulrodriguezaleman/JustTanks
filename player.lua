@@ -23,6 +23,7 @@ local player = {
   bulletHeight = 10,
   maxBulletCount = 5,
   bouncesLeft = 1,
+  maxMinesCount = 3,
   wantsUp = false,
   wantsRight = false,
   wantsDown = false,
@@ -77,9 +78,18 @@ function player.draw()
 end
 
 function player.shoot(x, y)
-  Bullet.shoot(player.x, player.y, player.width, player.height, x, y,
+  if player.visible then
+    Bullet.shoot(player.x, player.y, player.width, player.height, x, y,
                player.bulletSpeed, player.bouncesLeft, player.maxBulletCount,
                player.bulletImage, player.bulletWidth, player.bulletHeight)
+  end
+end
+
+function player.placeMine()
+  -- CAMBIAR CUANDO SE IMPLEMENTEN MINAS ENEMIGAS
+  if #Mine.getMines() < player.maxMinesCount then
+    Mine.new(player.x + player.width / 2 - 8, player.y + player.height / 2 - 8)
+  end
 end
 
 function player.processDirection()
@@ -132,16 +142,19 @@ end
 function player.destroy()
   if player.visible then
     player.visible = false
-    explosions.new(player.x + player.width / 2, player.y + player.height / 2, 1, 1)
-    Timer.during(1, function()
-    end, function()
-      if player.lives > 1 then
-        RESTART = true
-        player.lives = player.lives - 1
-      else
-        return Gamestate.switch(menu)
-      end
-    end)
+    explosions.new(player.x + player.width / 2, player.y + player.height / 2, 1, 0.4)
+    if not LEVEL_COMPLETED then
+      LEVEL_COMPLETED = false
+      Timer.during(1, function()
+      end, function()
+        if player.lives > 1 then
+          RESTART = true
+          player.lives = player.lives - 1
+        else
+          return Gamestate.switch(menu)
+        end
+      end)
+    end
   end
 end
 

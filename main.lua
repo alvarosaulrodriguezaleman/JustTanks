@@ -8,6 +8,7 @@ gui = require "lib/Gspot"
 
 require "enemy"
 require "bullet"
+require "mine"
 explosions = require "explosion"
 player = require "player"
 controls = require "controls"
