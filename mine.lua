@@ -13,7 +13,7 @@ Mine = class(function(obj, id, x, y)
     obj.quads = animation.getQuads(spritesheet, 0, 0, 16, 16, 2)
     obj.elapsed_time = 0
     obj.active_image = 1
-    obj.threshold = 1
+    obj.threshold = 0.6
     obj.isMine = true
   end)
 

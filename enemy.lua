@@ -53,7 +53,7 @@ function Enemy.init(id, type, x, y)
     enemy.fireRate = function() return love.math.random(1, 3) + love.math.random() end
     enemy.attackTimeThreshold = enemy.fireRate()
     enemy.maxBulletCount = 1
-    enemy.bulletSpeed = 100
+    enemy.bulletSpeed = 90
     enemy.bouncesLeft = 1
   end
 
@@ -65,10 +65,10 @@ function Enemy.init(id, type, x, y)
     enemy.elapsedMovementTime = 0
     enemy.movementTimeThreshold = 0
     enemy.elapsedAttackTime = 0
-    enemy.fireRate = function() return love.math.random(1, 2) + love.math.random() end
+    enemy.fireRate = function() return love.math.random(0, 3) + love.math.random() end
     enemy.attackTimeThreshold = enemy.fireRate()
     enemy.maxBulletCount = 3
-    enemy.bulletSpeed = 140
+    enemy.bulletSpeed = 130
     enemy.bouncesLeft = 1
   end
 
@@ -81,7 +81,7 @@ function Enemy.init(id, type, x, y)
     enemy.fireRate = function() return 1 + love.math.random() end
     enemy.attackTimeThreshold = enemy.fireRate()
     enemy.maxBulletCount = 15
-    enemy.bulletSpeed = 120
+    enemy.bulletSpeed = 110
     enemy.bouncesLeft = 2
   end
 

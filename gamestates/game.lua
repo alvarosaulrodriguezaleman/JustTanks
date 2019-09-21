@@ -1,24 +1,39 @@
 local game = {}
 local level
-local number_of_levels = 3
+local number_of_levels = 6
 local victory_achieved = false
 
 function game:enter(previous, n)
   if n > number_of_levels then
     return Gamestate.switch(menu)
   end
+
   love.graphics.setFont(font20)
+  love.graphics.setBackgroundColor(57/255, 194/255, 114/255, 0)
   love.mouse.setCursor(love.mouse.newCursor("assets/cursor.png", 14, 14))
-	world = bump.newWorld(32)
-	map = sti("maps/map0"..n..".lua", {"bump"})
-	map:bump_init(world)
+  state = controls.game
+
+  game.initMap(n)
+  game.initEntities()
+  game.initGlobals()
+end
+
+function game.initMap(n)
+  world = bump.newWorld(32)
+  map = sti("maps/map0"..n..".lua", {"bump"})
+  map:bump_init(world)
+  level = n
+end
+
+function game.initEntities()
   player.init()
   Enemy.initAllEnemies()
   Mine.initAllMines()
   Bullet.init()
   explosions.clear()
-  state = controls.game
+end
 
+function game.initGlobals()
   RESTART = false
   LEVEL_COMPLETED = false
   SCREEN_SHAKE = false
@@ -26,8 +41,6 @@ function game:enter(previous, n)
   BASE_TY = 0
   BASE_SX = 1
   BASE_SY = 1
-
-  level = n
 end
 
 function game:resume()
@@ -38,10 +51,14 @@ function game:update(dt)
   if RESTART then
     return Gamestate.switch(game, level)
   end
-  game.checkVictory()
   Timer.update(dt)
 	map:update(dt)
-	player.update(dt)
+  game.checkVictory()
+  game.updateEntities(dt)
+end
+
+function game.updateEntities(dt)
+  player.update(dt)
   for i, enemy in ipairs(Enemy.getEnemies()) do
     enemy:update(dt)
   end
@@ -55,19 +72,26 @@ function game:update(dt)
 end
 
 function game:draw()
-  love.graphics.setBackgroundColor(57/255, 194/255, 114/255, 0)
   love.graphics.translate(BASE_TX, BASE_TY)
   love.graphics.scale(BASE_SX, BASE_SY)
-	--love.graphics.setColor(1, 1, 1)
+
+  game.drawMap()
+  game.drawEntities()
+  game.drawStatusText()
+end
+
+function game.drawMap()
   if SCREEN_SHAKE then
     local dx = love.math.random(-2, 2)
     local dy = love.math.random(-2, 2)
     love.graphics.translate(dx, dy)
     map:draw(BASE_TX + dx, BASE_TY + dy, BASE_SX, BASE_SY)
   else
-	  map:draw(BASE_TX, BASE_TY, BASE_SX, BASE_SY)
+    map:draw(BASE_TX, BASE_TY, BASE_SX, BASE_SY)
   end
+end
 
+function game.drawEntities()
   player.draw()
   for i, enemy in ipairs(Enemy.getEnemies()) do
     enemy:draw()
@@ -79,10 +103,6 @@ function game:draw()
     mine:draw()
   end
   explosions.draw()
-
-  game.drawStatusText()
-	--love.graphics.setColor(1, 0, 0)
-	--map:bump_draw(world)
 end
 
 function game:mousepressed(x, y, button, istouch)

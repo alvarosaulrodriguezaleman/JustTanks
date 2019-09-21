@@ -63,7 +63,9 @@ function menu:draw()
   love.graphics.setFont(font60)
   love.graphics.print("Just Tanks", W / 2, H / 2, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks") / 2))
   love.graphics.setFont(font14)
-  love.graphics.print("WASD or arrow keys to move, left click to shoot.", W / 2, H / 2 + 75, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
+  love.graphics.print("WASD or arrow keys to move", W / 2, H / 2 + 75, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
+  love.graphics.print("left click to shoot", W / 2, H / 2 + 95, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
+  love.graphics.print("space to place mines", W / 2, H / 2 + 115, 0, 1, 1, 0, math.floor(font60:getHeight("Just Tanks.") / 2))
 end
 
 return menu

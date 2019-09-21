@@ -87,7 +87,7 @@ end
 
 function player.placeMine()
   -- CAMBIAR CUANDO SE IMPLEMENTEN MINAS ENEMIGAS
-  if #Mine.getMines() < player.maxMinesCount then
+  if #Mine.getMines() < player.maxMinesCount and player.visible then
     Mine.new(player.x + player.width / 2 - 8, player.y + player.height / 2 - 8)
   end
 end
