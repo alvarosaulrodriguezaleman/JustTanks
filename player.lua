@@ -86,9 +86,8 @@ function player.shoot(x, y)
 end
 
 function player.placeMine()
-  -- CAMBIAR CUANDO SE IMPLEMENTEN MINAS ENEMIGAS
-  if #Mine.getMines() < player.maxMinesCount and player.visible then
-    Mine.new(player.x + player.width / 2 - 8, player.y + player.height / 2 - 8)
+  if Mine.getPlayerMines() < player.maxMinesCount and player.visible then
+    Mine.new(player.x + player.width / 2 - 8, player.y + player.height / 2 - 8, true)
   end
 end
 

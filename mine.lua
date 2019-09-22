@@ -6,7 +6,7 @@ local mines = {}
 local mineID = 1
 local spritesheet = love.graphics.newImage("assets/mine.png")
 
-Mine = class(function(obj, id, x, y)
+Mine = class(function(obj, id, x, y, playerMine)
     obj.id = id
     obj.x = x
     obj.y = y
@@ -15,10 +15,11 @@ Mine = class(function(obj, id, x, y)
     obj.active_image = 1
     obj.threshold = 0.6
     obj.isMine = true
+    obj.isPlayerMine = playerMine
   end)
 
-function Mine.new(x, y)
-  mine = Mine(mineID, x, y)
+function Mine.new(x, y, playerMine)
+  mine = Mine(mineID, x, y, playerMine)
   mineID = mineID + 1
   table.insert(mines, mine)
   world:add(mine, mine.x, mine.y, 16, 16)
@@ -41,7 +42,7 @@ function Mine.initAllMines()
   Mine.clear()
   for k, object in pairs(map.objects) do
   	if object.name == "Mine" then
-      Mine.new(object.x, object.y)
+      Mine.new(object.x, object.y, false)
   	end
   end
 end
@@ -79,4 +80,14 @@ end
 
 function Mine.getMines()
   return mines
+end
+
+function Mine.getPlayerMines()
+  local count = 0
+  for i, v in ipairs(mines) do
+    if v.isPlayerMine then
+      count = count + 1
+    end
+  end
+  return count
 end

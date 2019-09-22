@@ -11,7 +11,7 @@ function menu:init()
   font60 = love.graphics.newFont(60)
 
   classicButton = gui:button('Classic', {W/3, H/2-math.floor(font60:getHeight("Just Tanks") / 3), 100, 50})
-  classicButton.click = function(this) return Gamestate.switch(game, 1) end
+  classicButton.click = function(this) return Gamestate.switch(game, 6) end
   classicButton.style.default = {45/255, 150/255, 89/255, 1}
   classicButton.style.hilite = {60/255, 165/255, 104/255, 1}
 

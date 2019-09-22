@@ -40,7 +40,7 @@ function Enemy:draw()
   self.trail:draw()
   love.graphics.draw(self.image, math.floor(self.x + self.width / 2), math.floor(self.y + self.height / 2), self.angle, 1, 1, 17, 17)
   local barrelAngle = animation.getAngle(self.x, self.y, self.width, self.height, player.x + player.width/2, player.y + player.width/2) - math.pi/2 + 0.05
-  love.graphics.draw(self.barrelImage, math.floor(self.x + self.width/2), math.floor(self.y + self.height/2), barrelAngle, 1, 1, 6, 6)
+  love.graphics.draw(self.barrelImage, math.floor(self.x + self.width/2), math.floor(self.y + self.height/2), barrelAngle, 1, 1, self.barrelImage:getWidth()/2, self.barrelImage:getWidth()/2)
 end
 
 function Enemy.init(id, type, x, y)
@@ -65,7 +65,7 @@ function Enemy.init(id, type, x, y)
     enemy.elapsedMovementTime = 0
     enemy.movementTimeThreshold = 0
     enemy.elapsedAttackTime = 0
-    enemy.fireRate = function() return love.math.random(0, 3) + love.math.random() end
+    enemy.fireRate = function() return love.math.random(1, 2) + love.math.random() end
     enemy.attackTimeThreshold = enemy.fireRate()
     enemy.maxBulletCount = 3
     enemy.bulletSpeed = 130
@@ -83,6 +83,19 @@ function Enemy.init(id, type, x, y)
     enemy.maxBulletCount = 15
     enemy.bulletSpeed = 110
     enemy.bouncesLeft = 2
+  end
+
+  if type == "4" then
+    enemy = Enemy(id, 4, x, y, 32, 32, 75)
+
+    enemy.bulletWidth = 8
+    enemy.bulletHeight = 10
+    enemy.elapsedAttackTime = 0
+    enemy.fireRate = function() return love.math.random(0, 1) + love.math.random() end
+    enemy.attackTimeThreshold = enemy.fireRate()
+    enemy.maxBulletCount = 4
+    enemy.bulletSpeed = 140
+    enemy.bouncesLeft = 0
   end
 
   return enemy
@@ -133,6 +146,10 @@ function Enemy:processMovement(dt)
     self:randomMovement(dt)
   end
 
+  if self.type == 4 then
+    self:aggresiveMovement(dt)
+  end
+
   if self.wantsUp then
     self.dy = -self.speed
   end
@@ -180,8 +197,16 @@ function Enemy:randomMovement(dt)
   end
 end
 
+function Enemy:aggresiveMovement(dt)
+    local newMoveAngle = (math.atan2((player.y + player.height/2) - (self.y + self.height/2), (player.x + player.width/2) - (self.x + self.width/2))) % (2 * math.pi) - math.pi
+    self.wantsUp = (newMoveAngle > 0 + math.pi/8 and newMoveAngle < math.pi - math.pi/8) and true or false
+    self.wantsRight = (newMoveAngle > math.pi/2 + math.pi/8 or newMoveAngle < -math.pi/2 - math.pi/8) and true or false
+    self.wantsDown = (newMoveAngle < 0 - math.pi/8 and newMoveAngle > -math.pi + math.pi/8) and true or false
+    self.wantsLeft = (newMoveAngle > -math.pi/2 + math.pi/8 and newMoveAngle < math.pi/2 - math.pi/8) and true or false
+end
+
 function Enemy:processAttacks(dt)
-  if self.type >= 1 and self.type <= 3 then
+  if self.type >= 1 and self.type <= 4 then
     self:shootAtPlayer(dt)
   end
 end
