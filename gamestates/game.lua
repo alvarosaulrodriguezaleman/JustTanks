@@ -36,10 +36,6 @@ function game.initGlobals()
   RESTART = false
   LEVEL_COMPLETED = false
   SCREEN_SHAKE = false
-  BASE_TX = 0
-  BASE_TY = 0
-  BASE_SX = 1
-  BASE_SY = 1
 end
 
 function game:resume()
@@ -71,8 +67,8 @@ function game.updateEntities(dt)
 end
 
 function game:draw()
-  love.graphics.translate(BASE_TX, BASE_TY)
   love.graphics.scale(BASE_SX, BASE_SY)
+  love.graphics.translate(BASE_TX, BASE_TY)
 
   game.drawMap()
   game.drawEntities()
@@ -111,10 +107,11 @@ function game:mousepressed(x, y, button, istouch)
 end
 
 function game.drawStatusText()
+  local W, H = love.graphics.getWidth(), love.graphics.getHeight()
   love.graphics.setFont(font20)
-  love.graphics.print("Level: " .. level, 400, 700)
+  love.graphics.print("Level: " .. level, W/3/BASE_SX - BASE_TX, 700)
   local aux = "Lives: " .. player.lives
-  love.graphics.print(aux, love.graphics.getWidth() - 400, 700, 0, 1, 1, math.floor(font20:getWidth(aux)))
+  love.graphics.print(aux, W/3*2/BASE_SX - BASE_TX, 700, 0, 1, 1, math.floor(font20:getWidth(aux)))
   --love.graphics.print("Bullets available: " .. player.maxBulletCount - Bullet.getNumberOfBullets(), 50, 720)
 end
 

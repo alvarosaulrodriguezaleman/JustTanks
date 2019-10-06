@@ -1,4 +1,3 @@
-local anim = require "utils/animation"
 local filters = require "utils/collisionFilters"
 
 local player = {
@@ -18,10 +17,10 @@ local player = {
   width = 32,
   height = 32,
   speed = 80,
-  bulletSpeed = 140,
+  bulletSpeed = 150,
   bulletWidth = 6,
   bulletHeight = 10,
-  maxBulletCount = 5,
+  maxBulletCount = 4,
   bouncesLeft = 1,
   maxMinesCount = 3,
   wantsUp = false,
@@ -46,7 +45,7 @@ player.trail = trail
     :setRotation(player.desiredAngle)
 
 function player.init()
-  for k, object in pairs(map.objects) do
+  for _, object in pairs(map.objects) do
   	if object.name == "Player" then
   	  player.x = object.x
       player.y = object.y

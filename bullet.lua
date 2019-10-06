@@ -26,7 +26,7 @@ Bullet = class(function(obj, id, x, y, dx, dy, w, h, image, bouncesLeft, isEnemy
 function Bullet:update(dt)
   if #bullets == 0 then return end
   self.x = self.x + (self.dx * dt)
-	self.y = self.y + (self.dy * dt)
+  self.y = self.y + (self.dy * dt)
   self.x, self.y, cols, len = world:move(self, self.x, self.y, filters.bullets)
   self:resolveCollisions(cols, len)
   self.trail:setPosition(self.x + self.width / 2, self.y + self.height / 2):setMotion(-self.dx * 0.2, -self.dy * 0.2)
@@ -57,6 +57,7 @@ function Bullet:resolveCollisions(cols, len)
     local other = cols[i].other
     if not (other.properties == nil) and other.properties.isWall then
       if self.bouncesLeft <= 0 then
+        explosions.new(self.x, self.y, 2, 0.2)
         self:destroy()
       else
         self.bouncesLeft = self.bouncesLeft - 1
@@ -88,14 +89,14 @@ function Bullet.shoot(x, y, w, h, targetX, targetY, bulletSpeed, bouncesLeft, ma
   id = id or -1
   local isEnemyBullet = id ~= -1 and true or false
   if Bullet.getNumberOfBullets(id) < maxBulletCount then
-    x = x - bulletWidth / 2
-    y = y - bulletHeight / 2
+    local x = x - bulletWidth / 2
+    local y = y - bulletHeight / 2
     local angle, startX, startY = animation.getAngle(x, y, w, h, targetX, targetY)
 
     local bulletDx = bulletSpeed * math.cos(angle)
     local bulletDy = bulletSpeed * math.sin(angle)
 
-    bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, bulletWidth, bulletHeight, image, bouncesLeft, isEnemyBullet, id)
+    local bullet = Bullet(bulletID, startX, startY, bulletDx, bulletDy, bulletWidth, bulletHeight, image, bouncesLeft, isEnemyBullet, id)
     bullet:initializeTrail()
     table.insert(bullets, bullet)
     world:add(bullet, bullet.x, bullet.y, bullet.width, bullet.height)
@@ -122,13 +123,13 @@ function Bullet.getNumberOfBullets(id)
   id = id or -1
   local count = 0
   if id == -1 then
-    for i, v in ipairs(bullets) do
+    for _, v in ipairs(bullets) do
       if not v.isEnemyBullet then
         count = count + 1
       end
     end
   else
-    for i, v in ipairs(bullets) do
+    for _, v in ipairs(bullets) do
       if v.shooterID == id then
         count = count + 1
       end
