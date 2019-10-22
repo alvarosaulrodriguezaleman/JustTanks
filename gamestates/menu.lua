@@ -13,13 +13,13 @@ function menu:init()
   BASE_TY = 0
   BASE_SX = 1
   BASE_SY = 1
-  
+
   font14 = love.graphics.newFont(14)
   font20 = love.graphics.newFont(20)
   font60 = love.graphics.newFont(60)
 
-  classicButton = gui:button('Classic', {0,0,0,0})
-  classicButton.click = function(this) return Gamestate.switch(game, 6) end
+  classicButton = gui:button('Play', {0,0,0,0})
+  classicButton.click = function(this) return Gamestate.switch(game, 1) end
   classicButton.style.default = {45/255, 150/255, 89/255, 1}
   classicButton.style.hilite = {60/255, 165/255, 104/255, 1}
 
